@@ -1,6 +1,9 @@
 [build]
 builder = "NIXPACKS"
 
+[setup]
+pkgs = ["python3", "gcc", "make"]
+
 [deploy]
 startCommand = "node src/server.js"
 restartPolicyType = "ON_FAILURE"
