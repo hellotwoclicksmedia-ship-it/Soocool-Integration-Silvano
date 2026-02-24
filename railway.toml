@@ -1,8 +1,11 @@
 [build]
 builder = "NIXPACKS"
 
-[setup]
-pkgs = ["python3", "gcc", "make"]
+[phases.setup]
+nixPkgs = ["python3", "gcc", "make"]
+
+[phases.install]
+cmds = ["npm ci"]
 
 [deploy]
 startCommand = "node src/server.js"
