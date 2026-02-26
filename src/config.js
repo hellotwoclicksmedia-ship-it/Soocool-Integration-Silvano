@@ -18,7 +18,7 @@ module.exports = {
   shopify: {
     storeUrl: require_env('SHOPIFY_STORE_URL'),
     accessToken: require_env('SHOPIFY_ACCESS_TOKEN'),
-    webhookSecret: require_env('SHOPIFY_WEBHOOK_SECRET'),
+    webhookSecret: require_env('SHOPIFY_WEBHOOK_SECRET').trim(),
   },
 
   webhookBaseUrl: require_env('WEBHOOK_BASE_URL'),
