@@ -17,10 +17,13 @@ const ALLOWED_COUNTRIES = new Set(['NL', 'BE']);
 router.post('/orders', (req, res) => {
     // Verify HMAC
     const hmac = req.headers['x-shopify-hmac-sha256'];
+    const secret = config.shopify.webhookSecret;
     const digest = crypto
-        .createHmac('sha256', config.shopify.webhookSecret)
+        .createHmac('sha256', secret)
         .update(req.body)
         .digest('base64');
+
+    console.log(`[shopifyWebhook] HMAC debug: received=${hmac?.substring(0, 10)}... computed=${digest.substring(0, 10)}... secret_len=${secret.length} body_len=${req.body?.length}`);
 
     if (digest !== hmac) {
         console.warn('[shopifyWebhook] Invalid HMAC — request rejected');
