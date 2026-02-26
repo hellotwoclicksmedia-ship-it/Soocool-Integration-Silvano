@@ -128,6 +128,50 @@ function sanitiseContents(str) {
 }
 
 /**
+ * Groups line items into physical boxes using product tags.
+ *
+ * Each product should have a tag like "bundle:Italian Forest bundle 12 box".
+ * Items with the same bundle tag are grouped together.
+ * If a group has doubled quantities (e.g. qty 4 instead of 2), it means
+ * multiple physical boxes of the same type were ordered.
+ *
+ * @param {Array} lineItems - order.line_items from Shopify
+ * @param {Map} tagsMap - productId → tags string (from shopify.getProductTags)
+ * @param {number} itemsPerBox - how many total items fit in one box (default 12 for meals)
+ * @returns {Array<{ bundleName: string, items: Array, boxCount: number }>}
+ */
+function groupItemsIntoBoxes(lineItems, tagsMap, itemsPerBox = 12) {
+    // Group by bundle tag
+    const groups = new Map();
+
+    for (const item of lineItems) {
+        const tags = tagsMap.get(item.product_id) || '';
+        const bundleTag = tags.split(',').map(t => t.trim()).find(t => t.startsWith('bundle:'));
+        const bundleName = bundleTag ? bundleTag.replace('bundle:', '').trim() : 'Unknown Bundle';
+
+        if (!groups.has(bundleName)) {
+            groups.set(bundleName, []);
+        }
+        groups.get(bundleName).push(item);
+    }
+
+    // Calculate box count per group
+    const result = [];
+    for (const [bundleName, items] of groups) {
+        const totalQty = items.reduce((sum, i) => sum + i.quantity, 0);
+        // For a 12-item box with 6 unique products, base qty per product is 2
+        // If qty is 4, that means 2 boxes were ordered
+        const uniqueProducts = items.length;
+        const baseQtyPerProduct = itemsPerBox / uniqueProducts;
+        const boxCount = Math.max(1, Math.round(items[0].quantity / baseQtyPerProduct));
+
+        result.push({ bundleName, items, boxCount });
+    }
+
+    return result;
+}
+
+/**
  * Builds a SooCool order payload for the Pizza flow (delivery-only).
  */
 function buildPizzaPayload(order, deliveryWindow) {
@@ -166,16 +210,53 @@ function buildPizzaPayload(order, deliveryWindow) {
 }
 
 /**
- * Builds a SooCool order payload for the Meal flow.
+ * Builds a SooCool order payload for the Meal flow with multiple boxes.
  *
  * Delivery-only — SooCool picks up from their own NL warehouse.
  * The shipping label from SooCool is sent to the Italy warehouse,
  * who ships the box to SooCool's NL warehouse using that label.
  * SooCool then delivers to the customer (NL/BE address).
+ *
+ * @param {Object} order - Shopify order object
+ * @param {Object} deliveryWindow - parsed delivery window
+ * @param {Array} boxGroups - from groupItemsIntoBoxes()
  */
-function buildMealPayload(order, deliveryWindow) {
+function buildMealPayload(order, deliveryWindow, boxGroups) {
     const customerAddress = mapAddress(order.shipping_address);
-    const contents = sanitiseContents(order.line_items.map((i) => `${i.name} x${i.quantity}`).join(', '));
+
+    // If no boxGroups provided, fall back to single-box behaviour
+    if (!boxGroups || boxGroups.length === 0) {
+        const contents = sanitiseContents(order.line_items.map((i) => `${i.name} x${i.quantity}`).join(', '));
+        boxGroups = [{ bundleName: 'Meal Box', items: order.line_items, boxCount: 1 }];
+    }
+
+    // Build goods array: one good per physical box
+    const goods = [];
+    const allGoodIds = [];
+    let goodIdCounter = -1;
+
+    for (const group of boxGroups) {
+        // Per-product qty for a single box (divide total qty by boxCount)
+        const perBoxItems = group.items.map(i => ({
+            name: i.name || i.title,
+            qty: Math.round(i.quantity / group.boxCount),
+        }));
+        const itemList = perBoxItems.map(i => `${i.name} x${i.qty}`).join(', ');
+
+        for (let b = 0; b < group.boxCount; b++) {
+            const label = group.boxCount > 1
+                ? `${group.bundleName} (${b + 1}/${group.boxCount})`
+                : group.bundleName;
+            goods.push({
+                goodId: goodIdCounter,
+                packagingType: 'box',
+                contents: sanitiseContents(`${label} #${order.order_number}: ${itemList}`),
+                transportRequirements: ['cooled'],
+            });
+            allGoodIds.push(goodIdCounter);
+            goodIdCounter--;
+        }
+    }
 
     return {
         orderReference: `SHOPIFY-${order.order_number}`,
@@ -194,17 +275,10 @@ function buildMealPayload(order, deliveryWindow) {
                     phone: null,
                     mobile: sanitisePhone(order.shipping_address.phone),
                 },
-                goods: [-1],
+                goods: allGoodIds,
             },
         ],
-        goods: [
-            {
-                goodId: -1,
-                packagingType: 'box',
-                contents: sanitiseContents(`Meal Box - Order #${order.order_number}: ${contents}`),
-                transportRequirements: ['cooled'],
-            },
-        ],
+        goods,
     };
 }
 
@@ -212,5 +286,6 @@ module.exports = {
     parseDeliveryWindow,
     buildPizzaPayload,
     buildMealPayload,
+    groupItemsIntoBoxes,
     mapAddress,
 };

@@ -64,4 +64,24 @@ async function addOrderNote(shopifyOrderId, note) {
     console.log(`[shopify] Note added to order ${shopifyOrderId}`);
 }
 
-module.exports = { fulfillOrder, addOrderNote };
+/**
+ * Fetch tags for a list of product IDs. Returns a Map of productId → tags string.
+ * Uses individual product fetches (Shopify doesn't allow bulk tag lookup easily).
+ */
+async function getProductTags(productIds) {
+    const tagsMap = new Map();
+    const uniqueIds = [...new Set(productIds)];
+
+    for (const pid of uniqueIds) {
+        try {
+            const res = await client.get(`/products/${pid}.json?fields=id,tags`);
+            tagsMap.set(pid, res.data.product.tags || '');
+        } catch (err) {
+            console.warn(`[shopify] Could not fetch tags for product ${pid}:`, err.message);
+            tagsMap.set(pid, '');
+        }
+    }
+    return tagsMap;
+}
+
+module.exports = { fulfillOrder, addOrderNote, getProductTags };

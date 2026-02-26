@@ -1,0 +1,974 @@
+[
+  {
+    "id": 35479163273560,
+    "admin_graphql_api_id": "gid://shopify/LineItem/35479163273560",
+    "attributed_staffs": [],
+    "current_quantity": 2,
+    "fulfillable_quantity": 2,
+    "fulfillment_service": "manual",
+    "fulfillment_status": null,
+    "gift_card": false,
+    "grams": 280,
+    "name": "Melanzane alla Parmigiana - Eggplant Parmigiana (280g)",
+    "price": "10.50",
+    "price_set": {
+      "shop_money": {
+        "amount": "10.50",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "10.50",
+        "currency_code": "EUR"
+      }
+    },
+    "product_exists": true,
+    "product_id": 15084401590616,
+    "properties": [],
+    "quantity": 2,
+    "requires_shipping": true,
+    "sku": "00773",
+    "taxable": true,
+    "title": "Melanzane alla Parmigiana - Eggplant Parmigiana (280g)",
+    "total_discount": "0.00",
+    "total_discount_set": {
+      "shop_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      }
+    },
+    "variant_id": 54870866035032,
+    "variant_inventory_management": "shopify",
+    "variant_title": null,
+    "vendor": "Zietta",
+    "tax_lines": [
+      {
+        "channel_liable": false,
+        "price": "0.00",
+        "price_set": {
+          "shop_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          }
+        },
+        "rate": 0.09,
+        "title": "NL btw"
+      }
+    ],
+    "duties": [],
+    "discount_allocations": [
+      {
+        "amount": "21.00",
+        "amount_set": {
+          "shop_money": {
+            "amount": "21.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "21.00",
+            "currency_code": "EUR"
+          }
+        },
+        "discount_application_index": 1
+      }
+    ]
+  },
+  {
+    "id": 35479163306328,
+    "admin_graphql_api_id": "gid://shopify/LineItem/35479163306328",
+    "attributed_staffs": [],
+    "current_quantity": 2,
+    "fulfillable_quantity": 2,
+    "fulfillment_service": "manual",
+    "fulfillment_status": null,
+    "gift_card": false,
+    "grams": 250,
+    "name": "Mezzelune Champignon e Tartufo - Mushrooms and Truffle Half-Moons (250g)",
+    "price": "9.50",
+    "price_set": {
+      "shop_money": {
+        "amount": "9.50",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "9.50",
+        "currency_code": "EUR"
+      }
+    },
+    "product_exists": true,
+    "product_id": 15091649511768,
+    "properties": [],
+    "quantity": 2,
+    "requires_shipping": true,
+    "sku": "",
+    "taxable": true,
+    "title": "Mezzelune Champignon e Tartufo - Mushrooms and Truffle Half-Moons (250g)",
+    "total_discount": "0.00",
+    "total_discount_set": {
+      "shop_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      }
+    },
+    "variant_id": 54902072410456,
+    "variant_inventory_management": "shopify",
+    "variant_title": null,
+    "vendor": "Zietta ",
+    "tax_lines": [
+      {
+        "channel_liable": false,
+        "price": "0.00",
+        "price_set": {
+          "shop_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          }
+        },
+        "rate": 0.09,
+        "title": "NL btw"
+      }
+    ],
+    "duties": [],
+    "discount_allocations": [
+      {
+        "amount": "19.00",
+        "amount_set": {
+          "shop_money": {
+            "amount": "19.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "19.00",
+            "currency_code": "EUR"
+          }
+        },
+        "discount_application_index": 1
+      }
+    ]
+  },
+  {
+    "id": 35479163339096,
+    "admin_graphql_api_id": "gid://shopify/LineItem/35479163339096",
+    "attributed_staffs": [],
+    "current_quantity": 2,
+    "fulfillable_quantity": 2,
+    "fulfillment_service": "manual",
+    "fulfillment_status": null,
+    "gift_card": false,
+    "grams": 250,
+    "name": "Ravioli Salvia Noci e Pecorino - Ravioli with Sage, Walnuts, and Pecorino (250g)",
+    "price": "9.50",
+    "price_set": {
+      "shop_money": {
+        "amount": "9.50",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "9.50",
+        "currency_code": "EUR"
+      }
+    },
+    "product_exists": true,
+    "product_id": 15091650462040,
+    "properties": [],
+    "quantity": 2,
+    "requires_shipping": true,
+    "sku": "",
+    "taxable": true,
+    "title": "Ravioli Salvia Noci e Pecorino - Ravioli with Sage, Walnuts, and Pecorino (250g)",
+    "total_discount": "0.00",
+    "total_discount_set": {
+      "shop_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      }
+    },
+    "variant_id": 54902079258968,
+    "variant_inventory_management": "shopify",
+    "variant_title": null,
+    "vendor": "Zietta ",
+    "tax_lines": [
+      {
+        "channel_liable": false,
+        "price": "0.00",
+        "price_set": {
+          "shop_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          }
+        },
+        "rate": 0.09,
+        "title": "NL btw"
+      }
+    ],
+    "duties": [],
+    "discount_allocations": [
+      {
+        "amount": "19.00",
+        "amount_set": {
+          "shop_money": {
+            "amount": "19.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "19.00",
+            "currency_code": "EUR"
+          }
+        },
+        "discount_application_index": 1
+      }
+    ]
+  },
+  {
+    "id": 35479163371864,
+    "admin_graphql_api_id": "gid://shopify/LineItem/35479163371864",
+    "attributed_staffs": [],
+    "current_quantity": 2,
+    "fulfillable_quantity": 2,
+    "fulfillment_service": "manual",
+    "fulfillment_status": null,
+    "gift_card": false,
+    "grams": 280,
+    "name": "Tagliatelle ai Funghi Porcini - Tagliatelle with Porcini Mushrooms (280g)",
+    "price": "9.50",
+    "price_set": {
+      "shop_money": {
+        "amount": "9.50",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "9.50",
+        "currency_code": "EUR"
+      }
+    },
+    "product_exists": true,
+    "product_id": 15091648692568,
+    "properties": [],
+    "quantity": 2,
+    "requires_shipping": true,
+    "sku": "",
+    "taxable": true,
+    "title": "Tagliatelle ai Funghi Porcini - Tagliatelle with Porcini Mushrooms (280g)",
+    "total_discount": "0.00",
+    "total_discount_set": {
+      "shop_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      }
+    },
+    "variant_id": 54902064939352,
+    "variant_inventory_management": "shopify",
+    "variant_title": null,
+    "vendor": "Zietta ",
+    "tax_lines": [
+      {
+        "channel_liable": false,
+        "price": "0.00",
+        "price_set": {
+          "shop_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          }
+        },
+        "rate": 0.09,
+        "title": "NL btw"
+      }
+    ],
+    "duties": [],
+    "discount_allocations": [
+      {
+        "amount": "19.00",
+        "amount_set": {
+          "shop_money": {
+            "amount": "19.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "19.00",
+            "currency_code": "EUR"
+          }
+        },
+        "discount_application_index": 1
+      }
+    ]
+  },
+  {
+    "id": 35479163404632,
+    "admin_graphql_api_id": "gid://shopify/LineItem/35479163404632",
+    "attributed_staffs": [],
+    "current_quantity": 2,
+    "fulfillable_quantity": 2,
+    "fulfillment_service": "manual",
+    "fulfillment_status": null,
+    "gift_card": false,
+    "grams": 300,
+    "name": "Lasagne Ricotta e Spinaci - Ricotta and Spinach Lasagne (300g)",
+    "price": "9.00",
+    "price_set": {
+      "shop_money": {
+        "amount": "9.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "9.00",
+        "currency_code": "EUR"
+      }
+    },
+    "product_exists": true,
+    "product_id": 15091646267736,
+    "properties": [],
+    "quantity": 2,
+    "requires_shipping": true,
+    "sku": "",
+    "taxable": true,
+    "title": "Lasagne Ricotta e Spinaci - Ricotta and Spinach Lasagne (300g)",
+    "total_discount": "0.00",
+    "total_discount_set": {
+      "shop_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      }
+    },
+    "variant_id": 54902051733848,
+    "variant_inventory_management": "shopify",
+    "variant_title": null,
+    "vendor": "Zietta ",
+    "tax_lines": [
+      {
+        "channel_liable": false,
+        "price": "0.00",
+        "price_set": {
+          "shop_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          }
+        },
+        "rate": 0.09,
+        "title": "NL btw"
+      }
+    ],
+    "duties": [],
+    "discount_allocations": [
+      {
+        "amount": "18.00",
+        "amount_set": {
+          "shop_money": {
+            "amount": "18.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "18.00",
+            "currency_code": "EUR"
+          }
+        },
+        "discount_application_index": 1
+      }
+    ]
+  },
+  {
+    "id": 35479163437400,
+    "admin_graphql_api_id": "gid://shopify/LineItem/35479163437400",
+    "attributed_staffs": [],
+    "current_quantity": 2,
+    "fulfillable_quantity": 2,
+    "fulfillment_service": "manual",
+    "fulfillment_status": null,
+    "gift_card": false,
+    "grams": 280,
+    "name": "Pici Cacio e Pepe - Pici Pasta with Pecorino Cheese and Black Pepper (280g)",
+    "price": "8.50",
+    "price_set": {
+      "shop_money": {
+        "amount": "8.50",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "8.50",
+        "currency_code": "EUR"
+      }
+    },
+    "product_exists": true,
+    "product_id": 15091647447384,
+    "properties": [],
+    "quantity": 2,
+    "requires_shipping": true,
+    "sku": "",
+    "taxable": true,
+    "title": "Pici Cacio e Pepe - Pici Pasta with Pecorino Cheese and Black Pepper (280g)",
+    "total_discount": "0.00",
+    "total_discount_set": {
+      "shop_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      }
+    },
+    "variant_id": 54902057238872,
+    "variant_inventory_management": "shopify",
+    "variant_title": null,
+    "vendor": "Zietta ",
+    "tax_lines": [
+      {
+        "channel_liable": false,
+        "price": "0.00",
+        "price_set": {
+          "shop_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          }
+        },
+        "rate": 0.09,
+        "title": "NL btw"
+      }
+    ],
+    "duties": [],
+    "discount_allocations": [
+      {
+        "amount": "17.00",
+        "amount_set": {
+          "shop_money": {
+            "amount": "17.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "17.00",
+            "currency_code": "EUR"
+          }
+        },
+        "discount_application_index": 1
+      }
+    ]
+  },
+  {
+    "id": 35479163470168,
+    "admin_graphql_api_id": "gid://shopify/LineItem/35479163470168",
+    "attributed_staffs": [],
+    "current_quantity": 2,
+    "fulfillable_quantity": 2,
+    "fulfillment_service": "manual",
+    "fulfillment_status": null,
+    "gift_card": false,
+    "grams": 280,
+    "name": "Garganelli Erborinato e Speck - Garganelli with Blue Cheese and Speck (280g)",
+    "price": "8.50",
+    "price_set": {
+      "shop_money": {
+        "amount": "8.50",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "8.50",
+        "currency_code": "EUR"
+      }
+    },
+    "product_exists": true,
+    "product_id": 15091645907288,
+    "properties": [],
+    "quantity": 2,
+    "requires_shipping": true,
+    "sku": "",
+    "taxable": true,
+    "title": "Garganelli Erborinato e Speck - Garganelli with Blue Cheese and Speck (280g)",
+    "total_discount": "0.00",
+    "total_discount_set": {
+      "shop_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      }
+    },
+    "variant_id": 54902049145176,
+    "variant_inventory_management": "shopify",
+    "variant_title": null,
+    "vendor": "Zietta ",
+    "tax_lines": [
+      {
+        "channel_liable": false,
+        "price": "0.00",
+        "price_set": {
+          "shop_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          }
+        },
+        "rate": 0.09,
+        "title": "NL btw"
+      }
+    ],
+    "duties": [],
+    "discount_allocations": [
+      {
+        "amount": "17.00",
+        "amount_set": {
+          "shop_money": {
+            "amount": "17.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "17.00",
+            "currency_code": "EUR"
+          }
+        },
+        "discount_application_index": 1
+      }
+    ]
+  },
+  {
+    "id": 35479163502936,
+    "admin_graphql_api_id": "gid://shopify/LineItem/35479163502936",
+    "attributed_staffs": [],
+    "current_quantity": 2,
+    "fulfillable_quantity": 2,
+    "fulfillment_service": "manual",
+    "fulfillment_status": null,
+    "gift_card": false,
+    "grams": 250,
+    "name": "Peposo – Red Wine & Black Pepper Beef Stew (250g)",
+    "price": "12.00",
+    "price_set": {
+      "shop_money": {
+        "amount": "12.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "12.00",
+        "currency_code": "EUR"
+      }
+    },
+    "product_exists": true,
+    "product_id": 15084402180440,
+    "properties": [],
+    "quantity": 2,
+    "requires_shipping": true,
+    "sku": "00672",
+    "taxable": true,
+    "title": "Peposo – Red Wine & Black Pepper Beef Stew (250g)",
+    "total_discount": "0.00",
+    "total_discount_set": {
+      "shop_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      }
+    },
+    "variant_id": 54870870196568,
+    "variant_inventory_management": "shopify",
+    "variant_title": null,
+    "vendor": "Zietta",
+    "tax_lines": [
+      {
+        "channel_liable": false,
+        "price": "0.00",
+        "price_set": {
+          "shop_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          }
+        },
+        "rate": 0.09,
+        "title": "NL btw"
+      }
+    ],
+    "duties": [],
+    "discount_allocations": [
+      {
+        "amount": "24.00",
+        "amount_set": {
+          "shop_money": {
+            "amount": "24.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "24.00",
+            "currency_code": "EUR"
+          }
+        },
+        "discount_application_index": 1
+      }
+    ]
+  },
+  {
+    "id": 35479163535704,
+    "admin_graphql_api_id": "gid://shopify/LineItem/35479163535704",
+    "attributed_staffs": [],
+    "current_quantity": 2,
+    "fulfillable_quantity": 2,
+    "fulfillment_service": "manual",
+    "fulfillment_status": null,
+    "gift_card": false,
+    "grams": 300,
+    "name": "Rigatoni all’ Amatriciana (300g)",
+    "price": "8.50",
+    "price_set": {
+      "shop_money": {
+        "amount": "8.50",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "8.50",
+        "currency_code": "EUR"
+      }
+    },
+    "product_exists": true,
+    "product_id": 15091634045272,
+    "properties": [],
+    "quantity": 2,
+    "requires_shipping": true,
+    "sku": "",
+    "taxable": true,
+    "title": "Rigatoni all’ Amatriciana (300g)",
+    "total_discount": "0.00",
+    "total_discount_set": {
+      "shop_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      }
+    },
+    "variant_id": 54901804794200,
+    "variant_inventory_management": "shopify",
+    "variant_title": null,
+    "vendor": "Zietta ",
+    "tax_lines": [
+      {
+        "channel_liable": false,
+        "price": "0.00",
+        "price_set": {
+          "shop_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          }
+        },
+        "rate": 0.09,
+        "title": "NL btw"
+      }
+    ],
+    "duties": [],
+    "discount_allocations": [
+      {
+        "amount": "17.00",
+        "amount_set": {
+          "shop_money": {
+            "amount": "17.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "17.00",
+            "currency_code": "EUR"
+          }
+        },
+        "discount_application_index": 1
+      }
+    ]
+  },
+  {
+    "id": 35479163568472,
+    "admin_graphql_api_id": "gid://shopify/LineItem/35479163568472",
+    "attributed_staffs": [],
+    "current_quantity": 2,
+    "fulfillable_quantity": 2,
+    "fulfillment_service": "manual",
+    "fulfillment_status": null,
+    "gift_card": false,
+    "grams": 250,
+    "name": "Wild Boar Stew (250g)",
+    "price": "13.50",
+    "price_set": {
+      "shop_money": {
+        "amount": "13.50",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "13.50",
+        "currency_code": "EUR"
+      }
+    },
+    "product_exists": true,
+    "product_id": 15084403523928,
+    "properties": [],
+    "quantity": 2,
+    "requires_shipping": true,
+    "sku": "0528",
+    "taxable": true,
+    "title": "Wild Boar Stew (250g)",
+    "total_discount": "0.00",
+    "total_discount_set": {
+      "shop_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      }
+    },
+    "variant_id": 54870874587480,
+    "variant_inventory_management": "shopify",
+    "variant_title": null,
+    "vendor": "Zietta",
+    "tax_lines": [
+      {
+        "channel_liable": false,
+        "price": "0.00",
+        "price_set": {
+          "shop_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          }
+        },
+        "rate": 0.09,
+        "title": "NL btw"
+      }
+    ],
+    "duties": [],
+    "discount_allocations": [
+      {
+        "amount": "27.00",
+        "amount_set": {
+          "shop_money": {
+            "amount": "27.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "27.00",
+            "currency_code": "EUR"
+          }
+        },
+        "discount_application_index": 1
+      }
+    ]
+  },
+  {
+    "id": 35479163601240,
+    "admin_graphql_api_id": "gid://shopify/LineItem/35479163601240",
+    "attributed_staffs": [],
+    "current_quantity": 2,
+    "fulfillable_quantity": 2,
+    "fulfillment_service": "manual",
+    "fulfillment_status": null,
+    "gift_card": false,
+    "grams": 280,
+    "name": "Tonnarelli alla Carbonara (280g)",
+    "price": "8.50",
+    "price_set": {
+      "shop_money": {
+        "amount": "8.50",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "8.50",
+        "currency_code": "EUR"
+      }
+    },
+    "product_exists": true,
+    "product_id": 15091630571864,
+    "properties": [],
+    "quantity": 2,
+    "requires_shipping": true,
+    "sku": "",
+    "taxable": true,
+    "title": "Tonnarelli alla Carbonara (280g)",
+    "total_discount": "0.00",
+    "total_discount_set": {
+      "shop_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      }
+    },
+    "variant_id": 54901785788760,
+    "variant_inventory_management": "shopify",
+    "variant_title": null,
+    "vendor": "Zietta ",
+    "tax_lines": [
+      {
+        "channel_liable": false,
+        "price": "0.00",
+        "price_set": {
+          "shop_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          }
+        },
+        "rate": 0.09,
+        "title": "NL btw"
+      }
+    ],
+    "duties": [],
+    "discount_allocations": [
+      {
+        "amount": "17.00",
+        "amount_set": {
+          "shop_money": {
+            "amount": "17.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "17.00",
+            "currency_code": "EUR"
+          }
+        },
+        "discount_application_index": 1
+      }
+    ]
+  },
+  {
+    "id": 35479163634008,
+    "admin_graphql_api_id": "gid://shopify/LineItem/35479163634008",
+    "attributed_staffs": [],
+    "current_quantity": 2,
+    "fulfillable_quantity": 2,
+    "fulfillment_service": "manual",
+    "fulfillment_status": null,
+    "gift_card": false,
+    "grams": 280,
+    "name": "Pappardelle al Ragu' di Cinghiale - Pappardelle with Wild Boar Ragu' (280g)",
+    "price": "9.50",
+    "price_set": {
+      "shop_money": {
+        "amount": "9.50",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "9.50",
+        "currency_code": "EUR"
+      }
+    },
+    "product_exists": true,
+    "product_id": 15091639648600,
+    "properties": [],
+    "quantity": 2,
+    "requires_shipping": true,
+    "sku": "",
+    "taxable": true,
+    "title": "Pappardelle al Ragu' di Cinghiale - Pappardelle with Wild Boar Ragu' (280g)",
+    "total_discount": "0.00",
+    "total_discount_set": {
+      "shop_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      }
+    },
+    "variant_id": 54901824815448,
+    "variant_inventory_management": "shopify",
+    "variant_title": null,
+    "vendor": "Zietta ",
+    "tax_lines": [
+      {
+        "channel_liable": false,
+        "price": "0.00",
+        "price_set": {
+          "shop_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          }
+        },
+        "rate": 0.09,
+        "title": "NL btw"
+      }
+    ],
+    "duties": [],
+    "discount_allocations": [
+      {
+        "amount": "19.00",
+        "amount_set": {
+          "shop_money": {
+            "amount": "19.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "19.00",
+            "currency_code": "EUR"
+          }
+        },
+        "discount_application_index": 1
+      }
+    ]
+  }
+]

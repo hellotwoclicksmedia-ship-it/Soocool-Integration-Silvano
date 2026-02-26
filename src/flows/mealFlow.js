@@ -1,7 +1,8 @@
 'use strict';
 const soocool = require('../soocool/client');
+const shopify = require('../shopify/client');
 const store = require('../db/store');
-const { parseDeliveryWindow, buildMealPayload } = require('../utils/orderMapper');
+const { parseDeliveryWindow, buildMealPayload, groupItemsIntoBoxes } = require('../utils/orderMapper');
 const { generateOrderPdf } = require('../utils/pdfGenerator');
 
 /**
@@ -9,11 +10,13 @@ const { generateOrderPdf } = require('../utils/pdfGenerator');
  *
  * Flow:
  *  1. Parse delivery window from note_attributes (customer delivery date/time)
- *  2. Send delivery-only order to SooCool (customer NL/BE address)
+ *  2. Fetch product tags from Shopify to determine bundle groupings
+ *  3. Group items into boxes (1 box = 1 SooCool "good" = 1 shipping label)
+ *  4. Send delivery-only order to SooCool with multiple goods
  *     → SooCool picks up from their own NL warehouse internally
- *  3. Save order mapping to DB
- *  4. Fetch SooCool shipping label PDF
- *  5. Generate combined PDF (label + product list) → ready to be sent to Italy
+ *  5. Save order mapping to DB
+ *  6. Fetch SooCool shipping label PDF (may have multiple pages)
+ *  7. Generate combined PDF (labels + product list) → ready to be sent to Italy
  *     so Italy can attach it and ship the box to SooCool's NL warehouse
  */
 async function runMealFlow(order) {
@@ -23,8 +26,19 @@ async function runMealFlow(order) {
     const deliveryWindow = parseDeliveryWindow(order.note_attributes);
     console.log(`${tag} Delivery window:`, deliveryWindow);
 
-    const payload = buildMealPayload(order, deliveryWindow);
-    console.log(`${tag} Sending to SooCool...`);
+    // Fetch product tags and group items into boxes
+    const productIds = order.line_items.map(i => i.product_id);
+    const tagsMap = await shopify.getProductTags(productIds);
+    const boxGroups = groupItemsIntoBoxes(order.line_items, tagsMap);
+
+    const totalBoxes = boxGroups.reduce((sum, g) => sum + g.boxCount, 0);
+    console.log(`${tag} Detected ${boxGroups.length} bundle group(s), ${totalBoxes} total box(es):`);
+    for (const g of boxGroups) {
+        console.log(`${tag}   - ${g.bundleName}: ${g.items.length} products, ${g.boxCount} box(es)`);
+    }
+
+    const payload = buildMealPayload(order, deliveryWindow, boxGroups);
+    console.log(`${tag} Sending to SooCool (${payload.goods.length} goods)...`);
 
     const soocoolOrderId = await soocool.createOrder(payload);
     console.log(`${tag} SooCool order created: ${soocoolOrderId}`);
@@ -52,8 +66,8 @@ async function runMealFlow(order) {
 
     store.updatePdfPath(order.id, pdfPath);
 
-    console.log(`${tag} Done. soocoolOrderId=${soocoolOrderId}, pdf=${pdfPath}`);
-    return { soocoolOrderId, pdfPath };
+    console.log(`${tag} Done. soocoolOrderId=${soocoolOrderId}, pdf=${pdfPath}, boxes=${totalBoxes}`);
+    return { soocoolOrderId, pdfPath, totalBoxes };
 }
 
 module.exports = { runMealFlow };
