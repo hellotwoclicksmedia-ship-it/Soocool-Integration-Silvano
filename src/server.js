@@ -18,6 +18,6 @@ app.use('/webhooks/soocool', soocoolWebhook);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
-app.listen(config.port, () => {
-    console.log(`[server] Listening on port ${config.port}`);
+app.listen(config.port, '0.0.0.0', () => {
+    console.log(`[server] Listening on 0.0.0.0:${config.port}`);
 });
