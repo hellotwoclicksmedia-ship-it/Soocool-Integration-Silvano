@@ -12,8 +12,8 @@ app.use('/webhooks/shopify', express.raw({ type: 'application/json' }));
 // Normal JSON for SooCool callbacks
 app.use('/webhooks/soocool', express.json());
 
-app.use('/webhooks/shopify/orders', shopifyWebhook);
-app.use('/webhooks/shopify/orders', shopifyCancelWebhook);
+app.use('/webhooks/shopify', shopifyWebhook);
+app.use('/webhooks/shopify', shopifyCancelWebhook);
 app.use('/webhooks/soocool', soocoolWebhook);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
