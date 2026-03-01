@@ -42,6 +42,12 @@ router.post('/orders', (req, res) => {
     // Respond immediately — process async
     res.status(200).send('OK');
 
+    const topic = req.headers['x-shopify-topic'];
+    if (topic && topic !== 'orders/create') {
+        console.log(`[shopifyWebhook] Ignoring event with topic: ${topic}`);
+        return;
+    }
+
     const tag = `[shopifyWebhook][order:${order.order_number}]`;
 
     // Validate country
