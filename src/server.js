@@ -22,6 +22,17 @@ app.use('/webhooks/soocool', soocoolWebhook);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
+// TEMPORARY — remove after debugging
+app.get('/debug/env', (_req, res) => {
+    const token = config.shopify.accessToken || '';
+    res.json({
+        tokenPrefix: token.substring(0, 8),
+        tokenSuffix: token.substring(token.length - 4),
+        tokenLength: token.length,
+        storeUrl: config.shopify.storeUrl,
+    });
+});
+
 /**
  * TEST ENDPOINT — Fetch a Shopify order by ID and run it through the flow.
  * Usage: GET /test/order/12087813833048
