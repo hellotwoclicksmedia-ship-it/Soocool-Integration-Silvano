@@ -4,7 +4,7 @@ require('dotenv').config();
 function require_env(name) {
   const val = process.env[name];
   if (!val) throw new Error(`Missing required env var: ${name}`);
-  return val;
+  return val.trim();
 }
 
 module.exports = {
@@ -12,7 +12,7 @@ module.exports = {
 
   soocool: {
     apiKey: require_env('SOOCOOL_API_KEY'),
-    baseUrl: process.env.SOOCOOL_BASE_URL || 'https://api.staging.soocool.nl',
+    baseUrl: (process.env.SOOCOOL_BASE_URL || 'https://api.staging.soocool.nl').trim(),
   },
 
   shopify: {
