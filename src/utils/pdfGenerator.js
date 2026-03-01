@@ -73,9 +73,9 @@ async function generateOrderPdf({ order, deliveryWindow, labelBuffer }) {
 
         const colX = { name: 45, sku: 290, qty: 430, price: 490 };
 
-        if (opts.boxGroups && opts.boxGroups.length > 0) {
+        if (boxGroups && boxGroups.length > 0) {
             // Render items grouped by box
-            for (const group of opts.boxGroups) {
+            for (const group of boxGroups) {
                 // Determine how many boxes this group spans
                 for (let boxIndex = 1; boxIndex <= group.boxCount; boxIndex++) {
                     doc.moveDown(0.5);
