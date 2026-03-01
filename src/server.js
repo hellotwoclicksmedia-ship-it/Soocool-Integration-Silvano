@@ -125,7 +125,8 @@ app.get('/dashboard', (req, res) => {
                     <td>${row.flow.toUpperCase()}</td>
                     <td>${dateStr}</td>
                     <td>
-                        ${row.pdf_path ? `<a class="btn" href="/download/order/${row.shopify_order_number}">Download PDF</a>` : '<span class="empty">No PDF</span>'}
+                        ${row.pdf_path ? `<a class="btn" href="/download/order/${row.shopify_order_number}">Download combined PDF</a>
+                        <a class="btn" style="background:#28a745; margin-left: 5px;" href="/download/label/${row.shopify_order_number}">Download shipping label</a>` : '<span class="empty">No PDF</span>'}
                     </td>
                 </tr>
             `;
@@ -143,7 +144,7 @@ app.get('/dashboard', (req, res) => {
 });
 
 /**
- * DOWNLOAD — Download the PDF for a specific order
+ * DOWNLOAD — Download the combined PDF for a specific order
  */
 app.get('/download/order/:orderNumber', (req, res) => {
     const store = require('./db/store');
@@ -159,6 +160,29 @@ app.get('/download/order/:orderNumber', (req, res) => {
     }
 
     res.download(mapping.pdf_path, `Silvano-Order-${mapping.shopify_order_number}.pdf`);
+});
+
+/**
+ * DOWNLOAD — Download the raw SooCool label for a specific order
+ */
+app.get('/download/label/:orderNumber', (req, res) => {
+    const store = require('./db/store');
+    const fs = require('fs');
+    const path = require('path');
+    const mapping = store.getMappingByOrderNumber(req.params.orderNumber);
+
+    if (!mapping || !mapping.pdf_path) {
+        return res.status(404).send('Label not found for this order.');
+    }
+
+    // Label path is in the same directory as pdf_path but named 'label-{orderNumber}.pdf'
+    const labelPath = path.join(path.dirname(mapping.pdf_path), `label-${mapping.shopify_order_number}.pdf`);
+
+    if (!fs.existsSync(labelPath)) {
+        return res.status(404).send('Shipping label file no longer exists on the server (it may have been cleared by a server update, or SooCool did not provide one).');
+    }
+
+    res.download(labelPath, `Silvano-Label-${mapping.shopify_order_number}.pdf`);
 });
 
 app.listen(config.port, '0.0.0.0', () => {
