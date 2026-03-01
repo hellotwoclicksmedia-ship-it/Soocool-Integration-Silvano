@@ -78,6 +78,89 @@ app.get('/test/order/:orderId', async (req, res) => {
     }
 });
 
+/**
+ * DASHBOARD — View recent orders and download PDFs
+ */
+app.get('/dashboard', (req, res) => {
+    const store = require('./db/store');
+    const recent = store.getRecentMappings(50);
+
+    let html = `
+        <html>
+        <head>
+            <title>Silvano Orders</title>
+            <style>
+                body { font-family: system-ui, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
+                th { background-color: #f5f5f5; }
+                a.btn { display: inline-block; padding: 6px 12px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; }
+                a.btn:hover { background: #0056b3; }
+                .empty { color: #666; font-style: italic; }
+            </style>
+        </head>
+        <body>
+            <h1>Silvano Latest Orders</h1>
+            <p><strong>Note:</strong> PDFs are only retained between server updates (ephemeral storage).</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    if (recent.length === 0) {
+        html += `<tr><td colspan="4" class="empty">No recent orders found.</td></tr>`;
+    } else {
+        for (const row of recent) {
+            const dateStr = new Date(row.created_at).toLocaleString();
+            html += `
+                <tr>
+                    <td><strong>#${row.shopify_order_number}</strong></td>
+                    <td>${row.flow.toUpperCase()}</td>
+                    <td>${dateStr}</td>
+                    <td>
+                        ${row.pdf_path ? `<a class="btn" href="/download/order/${row.shopify_order_number}">Download PDF</a>` : '<span class="empty">No PDF</span>'}
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+    html += `
+                </tbody>
+            </table>
+        </body>
+        </html>
+    `;
+
+    res.send(html);
+});
+
+/**
+ * DOWNLOAD — Download the PDF for a specific order
+ */
+app.get('/download/order/:orderNumber', (req, res) => {
+    const store = require('./db/store');
+    const fs = require('fs');
+    const mapping = store.getMappingByOrderNumber(req.params.orderNumber);
+
+    if (!mapping || !mapping.pdf_path) {
+        return res.status(404).send('PDF not found for this order.');
+    }
+
+    if (!fs.existsSync(mapping.pdf_path)) {
+        return res.status(404).send('PDF file no longer exists on the server (it may have been cleared by a server update).');
+    }
+
+    res.download(mapping.pdf_path, `Silvano-Order-${mapping.shopify_order_number}.pdf`);
+});
+
 app.listen(config.port, '0.0.0.0', () => {
     console.log(`[server] Listening on 0.0.0.0:${config.port}`);
 });

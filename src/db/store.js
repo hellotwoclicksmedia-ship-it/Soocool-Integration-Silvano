@@ -43,6 +43,10 @@ const stmtUpdatePdf = db.prepare(`
   UPDATE order_mappings SET pdf_path = ? WHERE shopify_order_id = ?
 `);
 
+const stmtGetRecent = db.prepare(`
+  SELECT * FROM order_mappings ORDER BY created_at DESC LIMIT ?
+`);
+
 function saveMapping({ shopifyOrderId, shopifyOrderNumber, soocoolOrderId, flow, pdfPath = null }) {
   stmtInsert.run({
     shopify_order_id: String(shopifyOrderId),
@@ -69,10 +73,15 @@ function updatePdfPath(shopifyOrderId, pdfPath) {
   stmtUpdatePdf.run(pdfPath, String(shopifyOrderId));
 }
 
+function getRecentMappings(limit = 50) {
+  return stmtGetRecent.all(limit);
+}
+
 module.exports = {
   saveMapping,
   getMappingBySoocoolId,
   getMappingByShopifyId,
   getMappingByOrderNumber,
   updatePdfPath,
+  getRecentMappings,
 };
