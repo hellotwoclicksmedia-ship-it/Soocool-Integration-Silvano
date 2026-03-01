@@ -15,7 +15,7 @@ const LABELS_DIR = path.join(process.cwd(), 'tmp', 'labels');
  * @param {Buffer|null} opts.labelBuffer - PDF buffer from SooCool (may be null)
  * @returns {Promise<string>} path to generated PDF
  */
-async function generateOrderPdf({ order, deliveryWindow, labelBuffer }) {
+async function generateOrderPdf({ order, deliveryWindow, labelBuffer, boxGroups }) {
     // Ensure output directory exists
     if (!fs.existsSync(LABELS_DIR)) {
         fs.mkdirSync(LABELS_DIR, { recursive: true });
