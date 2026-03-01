@@ -16,6 +16,7 @@ db.exec(`
     soocool_order_id     INTEGER,
     flow                 TEXT NOT NULL CHECK(flow IN ('pizza', 'meal')),
     pdf_path             TEXT,
+    tracking_url         TEXT,
     created_at           DATETIME DEFAULT (datetime('now'))
   );
 `);
@@ -41,6 +42,10 @@ const stmtGetByOrderNumber = db.prepare(`
 
 const stmtUpdatePdf = db.prepare(`
   UPDATE order_mappings SET pdf_path = ? WHERE shopify_order_id = ?
+`);
+
+const stmtUpdateTracking = db.prepare(`
+  UPDATE order_mappings SET tracking_url = ? WHERE shopify_order_id = ?
 `);
 
 const stmtGetRecent = db.prepare(`
@@ -73,6 +78,10 @@ function updatePdfPath(shopifyOrderId, pdfPath) {
   stmtUpdatePdf.run(pdfPath, String(shopifyOrderId));
 }
 
+function updateTrackingUrl(shopifyOrderId, trackingUrl) {
+  stmtUpdateTracking.run(trackingUrl, String(shopifyOrderId));
+}
+
 function getRecentMappings(limit = 50) {
   return stmtGetRecent.all(limit);
 }
@@ -83,5 +92,6 @@ module.exports = {
   getMappingByShopifyId,
   getMappingByOrderNumber,
   updatePdfPath,
+  updateTrackingUrl,
   getRecentMappings,
 };

@@ -108,6 +108,7 @@ app.get('/dashboard', (req, res) => {
                         <th>Order</th>
                         <th>Type</th>
                         <th>Date</th>
+                        <th>Tracking</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -115,7 +116,7 @@ app.get('/dashboard', (req, res) => {
     `;
 
     if (recent.length === 0) {
-        html += `<tr><td colspan="4" class="empty">No recent orders found.</td></tr>`;
+        html += `<tr><td colspan="5" class="empty">No recent orders found.</td></tr>`;
     } else {
         for (const row of recent) {
             const dateStr = new Date(row.created_at).toLocaleString();
@@ -124,6 +125,9 @@ app.get('/dashboard', (req, res) => {
                     <td><strong>#${row.shopify_order_number}</strong></td>
                     <td>${row.flow.toUpperCase()}</td>
                     <td>${dateStr}</td>
+                    <td>
+                        ${row.tracking_url ? `<a href="${row.tracking_url}" target="_blank">Track Order</a>` : '<span class="empty">Pending</span>'}
+                    </td>
                     <td>
                         ${row.pdf_path ? `<a class="btn" href="/download/order/${row.shopify_order_number}">Download combined PDF</a>
                         <a class="btn" style="background:#28a745; margin-left: 5px;" href="/download/label/${row.shopify_order_number}">Download shipping label</a>` : '<span class="empty">No PDF</span>'}

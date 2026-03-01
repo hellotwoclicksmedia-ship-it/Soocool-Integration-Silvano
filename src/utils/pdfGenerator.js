@@ -71,32 +71,78 @@ async function generateOrderPdf({ order, deliveryWindow, labelBuffer }) {
         doc.fontSize(13).font('Helvetica-Bold').text('Products in Order');
         doc.moveDown(0.3);
 
-        // Table header
         const colX = { name: 45, sku: 290, qty: 430, price: 490 };
-        doc.fontSize(10).font('Helvetica-Bold');
-        doc.text('Product', colX.name, doc.y, { continued: false, width: 240 });
-        const headerY = doc.y - doc.currentLineHeight();
-        doc.text('SKU', colX.sku, headerY, { width: 130 });
-        doc.text('Qty', colX.qty, headerY, { width: 55 });
-        doc.text('Price', colX.price, headerY, { width: 60 });
-        doc.moveDown(0.2);
-        doc.moveTo(40, doc.y).lineTo(555, doc.y).stroke();
-        doc.moveDown(0.2);
 
-        doc.font('Helvetica').fontSize(10);
-        for (const item of (order.line_items || [])) {
-            const rowY = doc.y;
-            doc.text(item.title || item.name, colX.name, rowY, { width: 240 });
-            const lineH = doc.y - rowY;
-            doc.text(item.sku || '—', colX.sku, rowY, { width: 130 });
-            doc.text(String(item.quantity), colX.qty, rowY, { width: 55 });
-            doc.text(
-                item.price ? `€${parseFloat(item.price).toFixed(2)}` : '—',
-                colX.price,
-                rowY,
-                { width: 60 }
-            );
-            doc.y = rowY + lineH + 2;
+        if (opts.boxGroups && opts.boxGroups.length > 0) {
+            // Render items grouped by box
+            for (const group of opts.boxGroups) {
+                // Determine how many boxes this group spans
+                for (let boxIndex = 1; boxIndex <= group.boxCount; boxIndex++) {
+                    doc.moveDown(0.5);
+                    doc.fontSize(11).font('Helvetica-Bold')
+                        .text(`Box: ${group.bundleName}` + (group.boxCount > 1 ? ` (Box ${boxIndex} of ${group.boxCount})` : ''));
+                    doc.moveDown(0.2);
+
+                    // Table header
+                    doc.fontSize(10).font('Helvetica-Bold');
+                    doc.text('Product', colX.name, doc.y, { continued: false, width: 240 });
+                    const headerY = doc.y - doc.currentLineHeight();
+                    doc.text('SKU', colX.sku, headerY, { width: 130 });
+                    doc.text('Qty', colX.qty, headerY, { width: 55 });
+                    doc.text('Price', colX.price, headerY, { width: 60 });
+                    doc.moveDown(0.2);
+                    doc.moveTo(40, doc.y).lineTo(555, doc.y).stroke('#cccccc');
+                    doc.moveDown(0.2);
+
+                    // Render items for this box (distribute items evenly if multiple boxes)
+                    // We split the items array into roughly equal chunks per box
+                    doc.font('Helvetica').fontSize(10);
+                    const itemsInThisBox = distributeItemsForBox(group.items, group.boxCount, boxIndex);
+
+                    for (const item of itemsInThisBox) {
+                        const rowY = doc.y;
+                        doc.text(item.title || item.name, colX.name, rowY, { width: 240 });
+                        const lineH = doc.y - rowY;
+                        doc.text(item.sku || '—', colX.sku, rowY, { width: 130 });
+                        doc.text(String(item.quantity), colX.qty, rowY, { width: 55 });
+                        doc.text(
+                            item.price ? `€${parseFloat(item.price).toFixed(2)}` : '—',
+                            colX.price,
+                            rowY,
+                            { width: 60 }
+                        );
+                        doc.y = Math.max(doc.y, rowY + lineH) + 2;
+                    }
+                    doc.moveDown(0.3);
+                }
+            }
+        } else {
+            // Fallback to flat list if no groupings provided
+            doc.fontSize(10).font('Helvetica-Bold');
+            doc.text('Product', colX.name, doc.y, { continued: false, width: 240 });
+            const headerY = doc.y - doc.currentLineHeight();
+            doc.text('SKU', colX.sku, headerY, { width: 130 });
+            doc.text('Qty', colX.qty, headerY, { width: 55 });
+            doc.text('Price', colX.price, headerY, { width: 60 });
+            doc.moveDown(0.2);
+            doc.moveTo(40, doc.y).lineTo(555, doc.y).stroke('#cccccc');
+            doc.moveDown(0.2);
+
+            doc.font('Helvetica').fontSize(10);
+            for (const item of (order.line_items || [])) {
+                const rowY = doc.y;
+                doc.text(item.title || item.name, colX.name, rowY, { width: 240 });
+                const lineH = doc.y - rowY;
+                doc.text(item.sku || '—', colX.sku, rowY, { width: 130 });
+                doc.text(String(item.quantity), colX.qty, rowY, { width: 55 });
+                doc.text(
+                    item.price ? `€${parseFloat(item.price).toFixed(2)}` : '—',
+                    colX.price,
+                    rowY,
+                    { width: 60 }
+                );
+                doc.y = Math.max(doc.y, rowY + lineH) + 2;
+            }
         }
 
         doc.moveDown(1);
@@ -146,6 +192,43 @@ async function generateOrderPdf({ order, deliveryWindow, labelBuffer }) {
 function formatDateTime(isoString) {
     if (!isoString) return '—';
     return isoString.replace('T', ' ').slice(0, 16);
+}
+
+/**
+ * Distributes a list of items across a given number of boxes.
+ * Returns the subset of items that belong in the specified boxIndex (1-indexed).
+ */
+function distributeItemsForBox(items, totalBoxes, boxIndex) {
+    if (totalBoxes <= 1) return items;
+
+    // Expand items with quantity > 1 into individual pieces
+    const expandedItems = [];
+    for (const item of items) {
+        for (let i = 0; i < item.quantity; i++) {
+            expandedItems.push({ ...item, quantity: 1 });
+        }
+    }
+
+    // Calculate items per box (ceil to ensure all items fit)
+    const itemsPerBox = Math.ceil(expandedItems.length / totalBoxes);
+
+    // Get items for this specific box
+    const startIndex = (boxIndex - 1) * itemsPerBox;
+    const endIndex = Math.min(startIndex + itemsPerBox, expandedItems.length);
+    const boxPieces = expandedItems.slice(startIndex, endIndex);
+
+    // Re-collapse identical items in this box
+    const collapsed = [];
+    for (const piece of boxPieces) {
+        const existing = collapsed.find(c => c.id === piece.id);
+        if (existing) {
+            existing.quantity++;
+        } else {
+            collapsed.push({ ...piece });
+        }
+    }
+
+    return collapsed;
 }
 
 module.exports = { generateOrderPdf };

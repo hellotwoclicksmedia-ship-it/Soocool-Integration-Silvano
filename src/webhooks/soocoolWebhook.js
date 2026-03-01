@@ -44,8 +44,13 @@ router.post('/updates', async (req, res) => {
 
     const shopifyOrderId = mapping.shopify_order_id;
 
+    const trackingUrl = body?.trackAndTraceLink || '';
+    if (trackingUrl) {
+        store.updateTrackingUrl(shopifyOrderId, trackingUrl);
+        console.log(`${tag} Saved tracking URL: ${trackingUrl}`);
+    }
+
     if (taskState === 'delivered') {
-        const trackingUrl = body?.trackAndTraceLink || '';
         const trackingNumber = body?.trackingNumber || '';
         console.log(`${tag} Order delivered — creating Shopify fulfillment`);
         await shopify.fulfillOrder(shopifyOrderId, trackingUrl, trackingNumber).catch((err) => {

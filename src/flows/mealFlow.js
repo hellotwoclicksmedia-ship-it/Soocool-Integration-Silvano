@@ -61,7 +61,7 @@ async function runMealFlow(order) {
 
     // Generate PDF with label + product list
     // This PDF is what gets sent to Italy to ship the box to SooCool's NL warehouse
-    const pdfPath = await generateOrderPdf({ order, deliveryWindow, labelBuffer });
+    const pdfPath = await generateOrderPdf({ order, deliveryWindow, labelBuffer, boxGroups });
     console.log(`${tag} PDF saved to: ${pdfPath}`);
 
     store.updatePdfPath(order.id, pdfPath);
