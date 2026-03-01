@@ -90,7 +90,7 @@ async function main() {
         process.exit(1);
     }
     if (!flow) {
-        flow = detectFlow(order.line_items);
+        flow = await detectFlow(order.line_items);
     }
     if (flow === 'unknown') {
         console.error('❌ Flow could not be detected. product_type is empty on all line items.');

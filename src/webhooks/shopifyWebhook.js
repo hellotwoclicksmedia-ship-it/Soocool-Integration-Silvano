@@ -42,34 +42,36 @@ router.post('/orders', (req, res) => {
     // Respond immediately — process async
     res.status(200).send('OK');
 
-    const topic = req.headers['x-shopify-topic'];
-    if (topic && topic !== 'orders/create') {
-        console.log(`[shopifyWebhook] Ignoring event with topic: ${topic}`);
-        return;
-    }
+    (async () => {
+        const topic = req.headers['x-shopify-topic'];
+        if (topic && topic !== 'orders/create') {
+            console.log(`[shopifyWebhook] Ignoring event with topic: ${topic}`);
+            return;
+        }
 
-    const tag = `[shopifyWebhook][order:${order.order_number}]`;
+        const tag = `[shopifyWebhook][order:${order.order_number}]`;
 
-    // Validate country
-    const country = order.shipping_address?.country_code;
-    if (!ALLOWED_COUNTRIES.has(country)) {
-        console.warn(`${tag} Shipping country "${country}" not supported (NL/BE only) — skipping`);
-        return;
-    }
+        // Validate country
+        const country = order.shipping_address?.country_code;
+        if (!ALLOWED_COUNTRIES.has(country)) {
+            console.warn(`${tag} Shipping country "${country}" not supported (NL/BE only) — skipping`);
+            return;
+        }
 
-    // Detect flow
-    const flow = detectFlow(order.line_items);
-    if (flow === 'unknown') {
-        console.warn(`${tag} Could not detect flow — skipping`);
-        return;
-    }
+        // Detect flow (async — fetches product tags from Shopify if needed)
+        const flow = await detectFlow(order.line_items);
+        if (flow === 'unknown') {
+            console.warn(`${tag} Could not detect flow — skipping`);
+            return;
+        }
 
-    console.log(`${tag} Flow detected: ${flow}`);
+        console.log(`${tag} Flow detected: ${flow}`);
 
-    // Run flow asynchronously
-    const runner = flow === 'pizza' ? runPizzaFlow : runMealFlow;
-    runner(order).catch((err) => {
-        console.error(`${tag} Flow error:`, err.message);
+        // Run flow
+        const runner = flow === 'pizza' ? runPizzaFlow : runMealFlow;
+        await runner(order);
+    })().catch((err) => {
+        console.error(`[shopifyWebhook][order:${order.order_number}] Flow error:`, err.message);
     });
 });
 

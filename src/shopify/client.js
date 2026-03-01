@@ -84,4 +84,12 @@ async function getProductTags(productIds) {
     return tagsMap;
 }
 
-module.exports = { fulfillOrder, addOrderNote, getProductTags };
+/**
+ * Fetch a single product by ID. Returns the product object.
+ */
+async function getProductById(productId) {
+    const res = await client.get(`/products/${productId}.json?fields=id,title,product_type,tags`);
+    return res.data.product;
+}
+
+module.exports = { fulfillOrder, addOrderNote, getProductTags, getProductById };
