@@ -12,7 +12,7 @@ module.exports = {
 
   soocool: {
     apiKey: require_env('SOOCOOL_API_KEY'),
-    baseUrl: (process.env.SOOCOOL_BASE_URL || 'https://api.staging.soocool.nl').trim(),
+    baseUrl: (process.env.SOOCOOL_BASE_URL || 'https://api.soocool.nl').trim(),
   },
 
   shopify: {
