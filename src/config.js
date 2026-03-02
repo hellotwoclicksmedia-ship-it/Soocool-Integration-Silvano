@@ -11,7 +11,7 @@ module.exports = {
   port: process.env.PORT || 3000,
 
   soocool: {
-    apiKey: require_env('SOOCOOL_API_KEY'),
+    apiKey: require_env('SOOCOOL_API_KEY').replace(/^=+/, ''),
     baseUrl: (process.env.SOOCOOL_BASE_URL || 'https://api.soocool.nl').trim(),
   },
 
