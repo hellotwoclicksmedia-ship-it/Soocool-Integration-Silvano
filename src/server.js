@@ -25,11 +25,16 @@ app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 // TEMPORARY — remove after debugging
 app.get('/debug/env', (_req, res) => {
     const token = config.shopify.accessToken || '';
+    const soocoolKey = config.soocool.apiKey || '';
     res.json({
         tokenPrefix: token.substring(0, 8),
         tokenSuffix: token.substring(token.length - 4),
         tokenLength: token.length,
         storeUrl: config.shopify.storeUrl,
+        soocoolKeyPrefix: soocoolKey.substring(0, 8),
+        soocoolKeySuffix: soocoolKey.substring(soocoolKey.length - 4),
+        soocoolKeyLength: soocoolKey.length,
+        soocoolBaseUrl: config.soocool.baseUrl,
     });
 });
 
