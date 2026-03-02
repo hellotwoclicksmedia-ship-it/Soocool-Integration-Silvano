@@ -236,21 +236,20 @@ function buildMealPayload(order, deliveryWindow, boxGroups) {
     let goodIdCounter = -1;
 
     for (const group of boxGroups) {
-        // Per-product qty for a single box (divide total qty by boxCount)
-        const perBoxItems = group.items.map(i => ({
-            name: i.name || i.title,
-            qty: Math.round(i.quantity / group.boxCount),
-        }));
-        const itemList = perBoxItems.map(i => `${i.name} x${i.qty}`).join(', ');
+        // Calculate total weight for one box (in kg)
+        // Shopify stores weight in grams by default
+        const totalGroupWeightGrams = group.items.reduce((sum, item) => {
+            const itemWeight = item.grams || 0; // Shopify line_items have a 'grams' field
+            return sum + (itemWeight * item.quantity);
+        }, 0);
+        const weightPerBoxKg = Math.round((totalGroupWeightGrams / group.boxCount) / 10) / 100; // round to 2 decimals
 
         for (let b = 0; b < group.boxCount; b++) {
-            const label = group.boxCount > 1
-                ? `${group.bundleName} (${b + 1}/${group.boxCount})`
-                : group.bundleName;
             goods.push({
                 goodId: goodIdCounter,
                 packagingType: 'box',
-                contents: sanitiseContents(`${label} #${order.order_number}: ${itemList}`),
+                contents: sanitiseContents(group.bundleName),
+                weight: weightPerBoxKg,
                 transportRequirements: ['cooled'],
             });
             allGoodIds.push(goodIdCounter);
