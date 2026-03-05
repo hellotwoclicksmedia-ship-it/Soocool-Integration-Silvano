@@ -22,6 +22,13 @@ db.exec(`
   );
 `);
 
+// Migration: add tracking_url column if it doesn't exist yet (for old DBs)
+try {
+  db.exec(`ALTER TABLE order_mappings ADD COLUMN tracking_url TEXT`);
+} catch (_) {
+  // Column already exists — ignore
+}
+
 // Migration: add delivery_date column if it doesn't exist yet
 try {
   db.exec(`ALTER TABLE order_mappings ADD COLUMN delivery_date TEXT`);

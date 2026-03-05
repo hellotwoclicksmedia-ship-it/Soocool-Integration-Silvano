@@ -236,22 +236,26 @@ function buildMealPayload(order, deliveryWindow, boxGroups) {
     let goodIdCounter = -1;
 
     for (const group of boxGroups) {
-        // Calculate total weight for one box (in kg)
+        // Calculate total weight for one box (in grams)
         // Shopify stores weight in grams by default
         const totalGroupWeightGrams = group.items.reduce((sum, item) => {
             const itemWeight = item.grams || 0; // Shopify line_items have a 'grams' field
             return sum + (itemWeight * item.quantity);
         }, 0);
-        const weightPerBoxKg = Math.round((totalGroupWeightGrams / group.boxCount) / 10) / 100; // round to 2 decimals
+        const weightPerBoxGrams = Math.round(totalGroupWeightGrams / group.boxCount);
 
         for (let b = 0; b < group.boxCount; b++) {
-            goods.push({
+            const good = {
                 goodId: goodIdCounter,
                 packagingType: 'box',
                 contents: sanitiseContents(group.bundleName),
-                weight: weightPerBoxKg,
                 transportRequirements: ['cooled'],
-            });
+            };
+            // SooCool requires weight as integer >= 1 (grams), omit if 0
+            if (weightPerBoxGrams > 0) {
+                good.weight = weightPerBoxGrams;
+            }
+            goods.push(good);
             allGoodIds.push(goodIdCounter);
             goodIdCounter--;
         }
