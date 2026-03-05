@@ -156,6 +156,27 @@ app.get('/test/update-order/:orderId', async (req, res) => {
         const updateResult = await soocool.updateOrder(mapping.soocool_order_id, payload);
         console.log(`${tag} ✅ SooCool update successful`);
 
+        // Regenerate PDF with updated delivery date + fresh shipping label
+        let pdfPath = null;
+        if (mapping.flow === 'meal') {
+            const { generateOrderPdf } = require('./utils/pdfGenerator');
+            let labelBuffer = null;
+            try {
+                labelBuffer = await soocool.getShippingLabel(mapping.soocool_order_id);
+                console.log(`${tag} Fresh shipping label fetched (${labelBuffer.length} bytes)`);
+            } catch (err) {
+                console.warn(`${tag} Could not fetch updated shipping label: ${err.message}`);
+            }
+
+            const productIds2 = order.line_items.map(i => i.product_id);
+            const tagsMap2 = await shopify.getProductTags(productIds2);
+            const boxGroups2 = groupItemsIntoBoxes(order.line_items, tagsMap2);
+
+            pdfPath = await generateOrderPdf({ order, deliveryWindow: newDeliveryWindow, labelBuffer, boxGroups: boxGroups2 });
+            console.log(`${tag} PDF regenerated: ${pdfPath}`);
+            store.updatePdfPath(order.id, pdfPath);
+        }
+
         // Persist new date
         store.updateDeliveryDate(order.id, newDate);
 
@@ -165,6 +186,7 @@ app.get('/test/update-order/:orderId', async (req, res) => {
             soocoolOrderId: mapping.soocool_order_id,
             oldDeliveryDate: oldDate,
             newDeliveryDate: newDate,
+            pdfPath,
             soocoolResponse: updateResult,
         });
     } catch (err) {

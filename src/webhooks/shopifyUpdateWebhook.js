@@ -6,6 +6,7 @@ const store = require('../db/store');
 const soocool = require('../soocool/client');
 const shopify = require('../shopify/client');
 const { parseDeliveryWindow, buildPizzaPayload, buildMealPayload, groupItemsIntoBoxes } = require('../utils/orderMapper');
+const { generateOrderPdf } = require('../utils/pdfGenerator');
 
 const router = express.Router();
 
@@ -95,6 +96,26 @@ router.post('/update', (req, res) => {
 
         await soocool.updateOrder(mapping.soocool_order_id, payload);
         console.log(`${tag} ✅ SooCool order ${mapping.soocool_order_id} updated successfully`);
+
+        // Regenerate PDF with updated delivery date + fresh shipping label
+        if (flow === 'meal') {
+            let labelBuffer = null;
+            try {
+                labelBuffer = await soocool.getShippingLabel(mapping.soocool_order_id);
+                console.log(`${tag} Fresh shipping label fetched (${labelBuffer.length} bytes)`);
+            } catch (err) {
+                console.warn(`${tag} Could not fetch updated shipping label: ${err.message}`);
+            }
+
+            const productIds = order.line_items.map(i => i.product_id);
+            const tagsMap = await shopify.getProductTags(productIds);
+            const boxGroups = groupItemsIntoBoxes(order.line_items, tagsMap);
+
+            const pdfPath = await generateOrderPdf({ order, deliveryWindow: newDeliveryWindow, labelBuffer, boxGroups });
+            console.log(`${tag} PDF regenerated: ${pdfPath}`);
+
+            store.updatePdfPath(order.id, pdfPath);
+        }
 
         // Persist the new delivery date
         store.updateDeliveryDate(order.id, newDate);
