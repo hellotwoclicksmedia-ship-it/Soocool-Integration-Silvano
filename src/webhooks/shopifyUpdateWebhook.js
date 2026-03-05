@@ -115,6 +115,16 @@ router.post('/update', (req, res) => {
             console.log(`${tag} PDF regenerated: ${pdfPath}`);
 
             store.updatePdfPath(order.id, pdfPath);
+
+            // Save PDF data to DB so it survives server restarts
+            const fs = require('fs');
+            try {
+                const pdfBuffer = fs.readFileSync(pdfPath);
+                store.savePdfData(order.id, pdfBuffer, labelBuffer);
+                console.log(`${tag} PDF data saved to DB`);
+            } catch (err) {
+                console.warn(`${tag} Could not save PDF data to DB: ${err.message}`);
+            }
         }
 
         // Persist the new delivery date

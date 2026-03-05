@@ -67,6 +67,16 @@ async function runMealFlow(order) {
 
     store.updatePdfPath(order.id, pdfPath);
 
+    // Store PDF data in DB so it survives server restarts
+    const fs = require('fs');
+    try {
+        const pdfBuffer = fs.readFileSync(pdfPath);
+        store.savePdfData(order.id, pdfBuffer, labelBuffer);
+        console.log(`${tag} PDF data saved to DB (${pdfBuffer.length} bytes combined, ${labelBuffer?.length || 0} bytes label)`);
+    } catch (err) {
+        console.warn(`${tag} Could not save PDF data to DB: ${err.message}`);
+    }
+
     console.log(`${tag} Done. soocoolOrderId=${soocoolOrderId}, pdf=${pdfPath}, boxes=${totalBoxes}`);
     return { soocoolOrderId, pdfPath, totalBoxes };
 }

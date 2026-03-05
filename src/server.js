@@ -249,7 +249,7 @@ app.get('/dashboard', (req, res) => {
                         ${row.tracking_url ? `<a href="${row.tracking_url}" target="_blank">Track Order</a>` : '<span class="empty">Pending</span>'}
                     </td>
                     <td>
-                        ${row.pdf_path ? `<a class="btn" href="/download/order/${row.shopify_order_number}">Download combined PDF</a>
+                        ${(row.pdf_path || row.has_pdf_data) ? `<a class="btn" href="/download/order/${row.shopify_order_number}">Download combined PDF</a>
                         <a class="btn" style="background:#28a745; margin-left: 5px;" href="/download/label/${row.shopify_order_number}">Download shipping label</a>` : '<span class="empty">No PDF</span>'}
                     </td>
                 </tr>
@@ -268,44 +268,58 @@ app.get('/dashboard', (req, res) => {
 });
 
 /**
- * DOWNLOAD — Download the combined PDF for a specific order
+ * DOWNLOAD — Download the combined PDF for a specific order.
+ * Serves from database first, falls back to filesystem.
  */
 app.get('/download/order/:orderNumber', (req, res) => {
     const store = require('./db/store');
     const fs = require('fs');
-    const mapping = store.getMappingByOrderNumber(req.params.orderNumber);
 
+    // Try database first (persists across deploys)
+    const pdfRow = store.getPdfData(req.params.orderNumber);
+    if (pdfRow && pdfRow.pdf_data) {
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="Silvano-Order-${pdfRow.shopify_order_number}.pdf"`);
+        return res.send(Buffer.from(pdfRow.pdf_data));
+    }
+
+    // Fallback to filesystem
+    const mapping = store.getMappingByOrderNumber(req.params.orderNumber);
     if (!mapping || !mapping.pdf_path) {
         return res.status(404).send('PDF not found for this order.');
     }
-
     if (!fs.existsSync(mapping.pdf_path)) {
-        return res.status(404).send('PDF file no longer exists on the server (it may have been cleared by a server update).');
+        return res.status(404).send('PDF file no longer exists on the server.');
     }
-
     res.download(mapping.pdf_path, `Silvano-Order-${mapping.shopify_order_number}.pdf`);
 });
 
 /**
- * DOWNLOAD — Download the raw SooCool label for a specific order
+ * DOWNLOAD — Download the raw SooCool label for a specific order.
+ * Serves from database first, falls back to filesystem.
  */
 app.get('/download/label/:orderNumber', (req, res) => {
     const store = require('./db/store');
     const fs = require('fs');
     const path = require('path');
-    const mapping = store.getMappingByOrderNumber(req.params.orderNumber);
 
+    // Try database first (persists across deploys)
+    const pdfRow = store.getPdfData(req.params.orderNumber);
+    if (pdfRow && pdfRow.label_data) {
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="Silvano-Label-${pdfRow.shopify_order_number}.pdf"`);
+        return res.send(Buffer.from(pdfRow.label_data));
+    }
+
+    // Fallback to filesystem
+    const mapping = store.getMappingByOrderNumber(req.params.orderNumber);
     if (!mapping || !mapping.pdf_path) {
         return res.status(404).send('Label not found for this order.');
     }
-
-    // Label path is in the same directory as pdf_path but named 'label-{orderNumber}.pdf'
     const labelPath = path.join(path.dirname(mapping.pdf_path), `label-${mapping.shopify_order_number}.pdf`);
-
     if (!fs.existsSync(labelPath)) {
-        return res.status(404).send('Shipping label file no longer exists on the server (it may have been cleared by a server update, or SooCool did not provide one).');
+        return res.status(404).send('Shipping label file no longer exists on the server.');
     }
-
     res.download(labelPath, `Silvano-Label-${mapping.shopify_order_number}.pdf`);
 });
 
