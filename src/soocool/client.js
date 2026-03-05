@@ -82,6 +82,18 @@ async function cancelOrder(soocoolOrderId) {
 }
 
 /**
+ * PUT /order/{orderId} — update an existing order in SooCool.
+ * The update payload has the same structure as create (orderReference, tasks, goods required).
+ * @param {number} soocoolOrderId
+ * @param {Object} payload - full order payload with updated fields
+ * @returns {Promise<Object>} updated order data
+ */
+async function updateOrder(soocoolOrderId, payload) {
+    const res = await client.put(`/order/${soocoolOrderId}`, payload);
+    return res.data;
+}
+
+/**
  * GET /ping — health check
  */
 async function ping() {
@@ -89,4 +101,4 @@ async function ping() {
     return res.data;
 }
 
-module.exports = { createOrder, getOrder, cancelOrder, getShippingLabel, ping };
+module.exports = { createOrder, getOrder, updateOrder, cancelOrder, getShippingLabel, ping };

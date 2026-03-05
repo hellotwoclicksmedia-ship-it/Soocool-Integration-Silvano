@@ -4,6 +4,7 @@ const axios = require('axios');
 const config = require('./config');
 const shopifyWebhook = require('./webhooks/shopifyWebhook');
 const shopifyCancelWebhook = require('./webhooks/shopifyCancelWebhook');
+const shopifyUpdateWebhook = require('./webhooks/shopifyUpdateWebhook');
 const soocoolWebhook = require('./webhooks/soocoolWebhook');
 const { detectFlow } = require('./utils/flowDetector');
 const { runPizzaFlow } = require('./flows/pizzaFlow');
@@ -18,6 +19,7 @@ app.use('/webhooks/soocool', express.json());
 
 app.use('/webhooks/shopify', shopifyWebhook);
 app.use('/webhooks/shopify', shopifyCancelWebhook);
+app.use('/webhooks/shopify', shopifyUpdateWebhook);
 app.use('/webhooks/soocool', soocoolWebhook);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
@@ -74,6 +76,97 @@ app.get('/test/order/:orderId', async (req, res) => {
 
         console.log(`${tag} Done!`, result);
         res.json({ status: 'ok', flow, result });
+    } catch (err) {
+        console.error(`${tag} Error:`, err.message);
+        res.status(500).json({
+            error: err.message,
+            soocoolError: err.response?.data || null,
+        });
+    }
+});
+
+/**
+ * TEST ENDPOINT — Test the order update flow (delivery date change).
+ * Usage: GET /test/update-order/12087813833048
+ * Optional: ?newDate=2026/03/10&newTime=8:00 AM - 6:00 PM
+ *   to override the note_attributes values
+ */
+app.get('/test/update-order/:orderId', async (req, res) => {
+    const { orderId } = req.params;
+    const tag = `[testUpdateEndpoint][order:${orderId}]`;
+
+    try {
+        const store = require('./db/store');
+        const soocool = require('./soocool/client');
+        const shopify = require('./shopify/client');
+        const { parseDeliveryWindow, buildPizzaPayload, buildMealPayload, groupItemsIntoBoxes } = require('./utils/orderMapper');
+
+        console.log(`${tag} Fetching order from Shopify...`);
+        const shopifyClient = axios.create({
+            baseURL: `https://${config.shopify.storeUrl}/admin/api/2024-04`,
+            headers: { 'X-Shopify-Access-Token': config.shopify.accessToken },
+        });
+
+        const orderRes = await shopifyClient.get(`/orders/${orderId}.json`);
+        const order = orderRes.data.order;
+        console.log(`${tag} Order #${order.order_number} found`);
+
+        // Look up existing mapping
+        const mapping = store.getMappingByShopifyId(order.id);
+        if (!mapping) {
+            return res.status(404).json({
+                error: 'No SooCool mapping found for this order',
+                hint: `First create the order via /test/order/${orderId}`,
+            });
+        }
+
+        console.log(`${tag} Found SooCool mapping: soocoolOrderId=${mapping.soocool_order_id}, flow=${mapping.flow}, storedDate=${mapping.delivery_date}`);
+
+        // Allow overriding the delivery date/time via query params for testing
+        if (req.query.newDate) {
+            const dateAttr = order.note_attributes.find(a => a.name === 'Delivery-Date');
+            if (dateAttr) dateAttr.value = req.query.newDate;
+            else order.note_attributes.push({ name: 'Delivery-Date', value: req.query.newDate });
+        }
+        if (req.query.newTime) {
+            const timeAttr = order.note_attributes.find(a => a.name === 'Delivery-Time');
+            if (timeAttr) timeAttr.value = req.query.newTime;
+            else order.note_attributes.push({ name: 'Delivery-Time', value: req.query.newTime });
+        }
+
+        // Parse delivery window
+        const newDeliveryWindow = parseDeliveryWindow(order.note_attributes);
+        const newDate = newDeliveryWindow.startTime.split('T')[0];
+        const oldDate = mapping.delivery_date;
+
+        console.log(`${tag} Old date: ${oldDate || '(none)'}, New date: ${newDate}`);
+
+        // Build payload based on flow type
+        let payload;
+        if (mapping.flow === 'meal') {
+            const productIds = order.line_items.map(i => i.product_id);
+            const tagsMap = await shopify.getProductTags(productIds);
+            const boxGroups = groupItemsIntoBoxes(order.line_items, tagsMap);
+            payload = buildMealPayload(order, newDeliveryWindow, boxGroups);
+        } else {
+            payload = buildPizzaPayload(order, newDeliveryWindow);
+        }
+
+        console.log(`${tag} Sending update to SooCool order ${mapping.soocool_order_id}...`);
+        const updateResult = await soocool.updateOrder(mapping.soocool_order_id, payload);
+        console.log(`${tag} ✅ SooCool update successful`);
+
+        // Persist new date
+        store.updateDeliveryDate(order.id, newDate);
+
+        res.json({
+            status: 'ok',
+            flow: mapping.flow,
+            soocoolOrderId: mapping.soocool_order_id,
+            oldDeliveryDate: oldDate,
+            newDeliveryDate: newDate,
+            soocoolResponse: updateResult,
+        });
     } catch (err) {
         console.error(`${tag} Error:`, err.message);
         res.status(500).json({

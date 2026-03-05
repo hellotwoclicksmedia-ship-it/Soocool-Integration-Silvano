@@ -48,6 +48,7 @@ async function runMealFlow(order) {
         shopifyOrderNumber: order.order_number,
         soocoolOrderId,
         flow: 'meal',
+        deliveryDate: deliveryWindow.startTime.split('T')[0],
     });
 
     // Fetch shipping label — to be sent to Italy warehouse

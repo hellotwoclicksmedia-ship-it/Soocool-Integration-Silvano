@@ -27,6 +27,7 @@ async function runPizzaFlow(order) {
         shopifyOrderNumber: order.order_number,
         soocoolOrderId,
         flow: 'pizza',
+        deliveryDate: deliveryWindow.startTime.split('T')[0],
     });
 
     console.log(`${tag} Done. soocoolOrderId=${soocoolOrderId}`);

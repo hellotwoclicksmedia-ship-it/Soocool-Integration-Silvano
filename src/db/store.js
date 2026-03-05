@@ -17,15 +17,27 @@ db.exec(`
     flow                 TEXT NOT NULL CHECK(flow IN ('pizza', 'meal')),
     pdf_path             TEXT,
     tracking_url         TEXT,
+    delivery_date        TEXT,
     created_at           DATETIME DEFAULT (datetime('now'))
   );
 `);
 
+// Migration: add delivery_date column if it doesn't exist yet
+try {
+  db.exec(`ALTER TABLE order_mappings ADD COLUMN delivery_date TEXT`);
+} catch (_) {
+  // Column already exists — ignore
+}
+
 const stmtInsert = db.prepare(`
   INSERT OR REPLACE INTO order_mappings
-    (shopify_order_id, shopify_order_number, soocool_order_id, flow, pdf_path)
+    (shopify_order_id, shopify_order_number, soocool_order_id, flow, pdf_path, delivery_date)
   VALUES
-    (@shopify_order_id, @shopify_order_number, @soocool_order_id, @flow, @pdf_path)
+    (@shopify_order_id, @shopify_order_number, @soocool_order_id, @flow, @pdf_path, @delivery_date)
+`);
+
+const stmtUpdateDeliveryDate = db.prepare(`
+  UPDATE order_mappings SET delivery_date = ? WHERE shopify_order_id = ?
 `);
 
 const stmtGetBySoocoolId = db.prepare(`
@@ -52,14 +64,19 @@ const stmtGetRecent = db.prepare(`
   SELECT * FROM order_mappings ORDER BY created_at DESC LIMIT ?
 `);
 
-function saveMapping({ shopifyOrderId, shopifyOrderNumber, soocoolOrderId, flow, pdfPath = null }) {
+function saveMapping({ shopifyOrderId, shopifyOrderNumber, soocoolOrderId, flow, pdfPath = null, deliveryDate = null }) {
   stmtInsert.run({
     shopify_order_id: String(shopifyOrderId),
     shopify_order_number: String(shopifyOrderNumber),
     soocool_order_id: soocoolOrderId,
     flow,
     pdf_path: pdfPath,
+    delivery_date: deliveryDate,
   });
+}
+
+function updateDeliveryDate(shopifyOrderId, deliveryDate) {
+  stmtUpdateDeliveryDate.run(deliveryDate, String(shopifyOrderId));
 }
 
 function getMappingBySoocoolId(soocoolOrderId) {
@@ -93,5 +110,6 @@ module.exports = {
   getMappingByOrderNumber,
   updatePdfPath,
   updateTrackingUrl,
+  updateDeliveryDate,
   getRecentMappings,
 };
