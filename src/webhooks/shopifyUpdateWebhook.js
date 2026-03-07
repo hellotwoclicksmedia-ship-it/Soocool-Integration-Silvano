@@ -17,7 +17,7 @@ const router = express.Router();
  * Detects delivery date changes in note_attributes and pushes
  * the updated delivery window to SooCool via PUT /order/{orderId}.
  */
-router.post('/update', (req, res) => {
+router.post('/orders/update', (req, res) => {
     // Verify HMAC
     const hmac = req.headers['x-shopify-hmac-sha256'];
     const digest = crypto

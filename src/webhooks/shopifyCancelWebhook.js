@@ -16,7 +16,7 @@ const router = express.Router();
  *   accepted | planned | allocated
  * Once in_transit or delivered, it's too late.
  */
-router.post('/cancel', (req, res) => {
+router.post('/orders/cancel', (req, res) => {
     // Verify HMAC
     const hmac = req.headers['x-shopify-hmac-sha256'];
     const digest = crypto
