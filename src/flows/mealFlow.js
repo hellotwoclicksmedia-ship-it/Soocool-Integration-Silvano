@@ -43,12 +43,13 @@ async function runMealFlow(order) {
     const soocoolOrderId = await soocool.createOrder(payload);
     console.log(`${tag} SooCool order created: ${soocoolOrderId}`);
 
+    // Modified: Save the full startTime so we can detect time-only changes during updates
     store.saveMapping({
         shopifyOrderId: order.id,
         shopifyOrderNumber: order.order_number,
         soocoolOrderId,
         flow: 'meal',
-        deliveryDate: deliveryWindow.startTime.split('T')[0],
+        deliveryDate: deliveryWindow.startTime,
     });
 
     // Fetch shipping label — to be sent to Italy warehouse

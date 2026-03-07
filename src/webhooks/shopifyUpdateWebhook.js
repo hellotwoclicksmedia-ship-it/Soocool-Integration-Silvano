@@ -67,16 +67,16 @@ router.post('/update', (req, res) => {
             return;
         }
 
-        // Extract just the date part for comparison
-        const newDate = newDeliveryWindow.startTime.split('T')[0];
+        // Extract full datetime string for comparison to detect time-only changes! 
+        const newDate = newDeliveryWindow.startTime;
         const oldDate = mapping.delivery_date;
 
         if (oldDate && oldDate === newDate) {
-            console.log(`${tag} Delivery date unchanged (${oldDate}) — no update needed`);
+            console.log(`${tag} Delivery date/time unchanged (${oldDate}) — no update needed`);
             return;
         }
 
-        console.log(`${tag} Delivery date changed: ${oldDate || '(none)'} → ${newDate}`);
+        console.log(`${tag} Delivery time or date changed: ${oldDate || '(none)'} → ${newDate}`);
 
         // Rebuild the full payload based on flow type
         let payload;

@@ -22,12 +22,13 @@ async function runPizzaFlow(order) {
     const soocoolOrderId = await soocool.createOrder(payload);
     console.log(`${tag} SooCool order created: ${soocoolOrderId}`);
 
+    // Modified: Save the full startTime so we can detect time-only changes during updates
     store.saveMapping({
         shopifyOrderId: order.id,
         shopifyOrderNumber: order.order_number,
         soocoolOrderId,
         flow: 'pizza',
-        deliveryDate: deliveryWindow.startTime.split('T')[0],
+        deliveryDate: deliveryWindow.startTime,
     });
 
     console.log(`${tag} Done. soocoolOrderId=${soocoolOrderId}`);

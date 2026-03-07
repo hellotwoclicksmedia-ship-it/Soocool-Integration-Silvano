@@ -134,12 +134,12 @@ app.get('/test/update-order/:orderId', async (req, res) => {
             else order.note_attributes.push({ name: 'Delivery-Time', value: req.query.newTime });
         }
 
-        // Parse delivery window
+        // Parse delivery window and check time changes
         const newDeliveryWindow = parseDeliveryWindow(order.note_attributes);
-        const newDate = newDeliveryWindow.startTime.split('T')[0];
+        const newDate = newDeliveryWindow.startTime;
         const oldDate = mapping.delivery_date;
 
-        console.log(`${tag} Old date: ${oldDate || '(none)'}, New date: ${newDate}`);
+        console.log(`${tag} Old date/time: ${oldDate || '(none)'}, New date/time: ${newDate}`);
 
         // Build payload based on flow type
         let payload;

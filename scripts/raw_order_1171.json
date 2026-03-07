@@ -1,0 +1,479 @@
+{
+  "id": 12099018424664,
+  "admin_graphql_api_id": "gid://shopify/Order/12099018424664",
+  "app_id": 580111,
+  "browser_ip": "90.145.71.210",
+  "buyer_accepts_marketing": true,
+  "cancel_reason": null,
+  "cancelled_at": null,
+  "cart_token": "hWN97NEKwF7NE7XdZb03XnM6",
+  "checkout_id": 65213523591512,
+  "checkout_token": "93451ac49b670b565c69028cdaac66f3",
+  "client_details": {
+    "accept_language": "en-AU",
+    "browser_height": null,
+    "browser_ip": "90.145.71.210",
+    "browser_width": null,
+    "session_hash": null,
+    "user_agent": "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+  },
+  "closed_at": null,
+  "confirmation_number": "FT5DZCGFK",
+  "confirmed": true,
+  "contact_email": "hyd1982@hotmail.com",
+  "created_at": "2026-03-05T10:03:53+01:00",
+  "currency": "EUR",
+  "current_subtotal_price": "0.00",
+  "current_subtotal_price_set": {
+    "shop_money": {
+      "amount": "0.00",
+      "currency_code": "EUR"
+    },
+    "presentment_money": {
+      "amount": "0.00",
+      "currency_code": "EUR"
+    }
+  },
+  "current_total_additional_fees_set": null,
+  "current_total_discounts": "190.00",
+  "current_total_discounts_set": {
+    "shop_money": {
+      "amount": "190.00",
+      "currency_code": "EUR"
+    },
+    "presentment_money": {
+      "amount": "190.00",
+      "currency_code": "EUR"
+    }
+  },
+  "current_total_duties_set": null,
+  "current_total_price": "8.99",
+  "current_total_price_set": {
+    "shop_money": {
+      "amount": "8.99",
+      "currency_code": "EUR"
+    },
+    "presentment_money": {
+      "amount": "8.99",
+      "currency_code": "EUR"
+    }
+  },
+  "current_total_tax": "1.56",
+  "current_total_tax_set": {
+    "shop_money": {
+      "amount": "1.56",
+      "currency_code": "EUR"
+    },
+    "presentment_money": {
+      "amount": "1.56",
+      "currency_code": "EUR"
+    }
+  },
+  "customer_locale": "en-AU",
+  "device_id": null,
+  "discount_codes": [],
+  "duties_included": false,
+  "email": "hyd1982@hotmail.com",
+  "estimated_taxes": false,
+  "financial_status": "paid",
+  "fulfillment_status": null,
+  "landing_site": null,
+  "landing_site_ref": null,
+  "location_id": null,
+  "merchant_business_entity_id": "MTg2ODM2NDc4Mjk2",
+  "merchant_of_record_app_id": null,
+  "name": "#117100",
+  "note": null,
+  "note_attributes": [
+    {
+      "name": "_agentClientInfo",
+      "value": "{\"sessionId\":\"\",\"clientId\":\"c72528ce-512b-4c5c-a0e0-318a7370d443\",\"clientInformation\":{\"userAgentInformation\":{\"schemaVersion\":\"1.0\",\"deviceName\":\"\",\"deviceVendor\":\"\",\"deviceType\":\"desktop\",\"browserName\":\"Chrome\",\"browserVersion\":\"143.0.0.0\",\"osName\":\"Chrome OS\",\"osVersion\":\"14541.0.0\",\"engineName\":\"Blink\",\"engineVersion\":\"143.0.0.0\",\"device\":\"\",\"os\":\"Chromium OS 14541.0.0\",\"browser\":\"Chrome 143.0.0.0\",\"engine\":\"Blink 143.0.0.0\",\"userAgent\":\"Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36\"},\"clarityInformation\":{\"sessionId\":\"12phomq\",\"userId\":\"e5c2s0\",\"projectId\":\"uafzja03s8\"},\"landingPageInformation\":{\"pageUrl\":\"https://ziettabox.com/en-nl/collections/social-pizza-bundle\",\"referrerUrl\":\"\",\"utmSource\":null,\"utmMedium\":null,\"utmCampaign\":null},\"conversationId\":\"\",\"platform\":\"Shopify\",\"platformSessionId\":\"\",\"platformUserId\":\"\"},\"language\":\"en\",\"currency\":\"EUR\",\"country\":\"NL\",\"isTestingSession\":false,\"features\":\"feature.AddToCartUpsell,feature.CollectionsChips,feature.DepracateOriginalProductUpdateFlow,feature.EntryMinIfCTACovered,feature.LiveProductEnrichmentQueue,feature.RelatedProductSearch,feature.cartpricedropnudge,feature.ctaFocused,feature.enableReviews,feature.exp1,feature.pdpoutofstock,feature.pfilter,feature.topsellernudge,feature.topviewednudge,feature.upsellV2,feature.AntiSSRFHttpClient,feature.bapsgpt41mini,feature.batchstorefrontapi,feature.blobUploadLimit10,feature.cnudge,feature.collectionsNudge,feature.enableautoonboarding,feature.EnableClarityCustomIdentity,feature.EnablePlaywrightTestQueue,feature.EnableVariantRanking,feature.EntrypointCoveredCheck,feature.feedback,feature.onboardLimit10,feature.RateLimiting,feature.RedisTimeoutandFallback,feature.resptexthistory1,feature.UseHttp2,feature.UsePapyrusClient,feature.webhookConcurrency10,feature.bapsgpt5mchatcopilot,feature.collectionfirst,feature.freeshippingcardcontrol,feature.imagesearch,feature.singleproductsearchcontrol,feature.uxdynamicpositioningcontrol,feature.uxshortnudgecontrol,feature.uxshortplaceholderC\"}"
+    },
+    {
+      "name": "datetime-updated",
+      "value": "March 05"
+    },
+    {
+      "name": "Delivery-Location-Id",
+      "value": "302644"
+    },
+    {
+      "name": "Delivery-Date",
+      "value": "2026/03/24"
+    },
+    {
+      "name": "Delivery-Time",
+      "value": "8:00 AM - 10:00 PM"
+    },
+    {
+      "name": "Delivery-Slot-Id",
+      "value": "129620854"
+    },
+    {
+      "name": "Checkout-Method",
+      "value": "delivery"
+    }
+  ],
+  "number": 171,
+  "order_number": 1171,
+  "order_status_url": "https://ziettabox.com/86836478296/orders/dcd9d9b4ffd492c58c1c1fd1ca7e220c/authenticate?key=42e3f5338d2fb2533f622100bc56637a",
+  "original_total_additional_fees_set": null,
+  "original_total_duties_set": null,
+  "payment_gateway_names": [
+    "shopify_payments"
+  ],
+  "phone": null,
+  "po_number": null,
+  "presentment_currency": "EUR",
+  "processed_at": "2026-03-05T10:03:50+01:00",
+  "reference": null,
+  "referring_site": null,
+  "source_identifier": null,
+  "source_name": "web",
+  "source_url": null,
+  "subtotal_price": "0.00",
+  "subtotal_price_set": {
+    "shop_money": {
+      "amount": "0.00",
+      "currency_code": "EUR"
+    },
+    "presentment_money": {
+      "amount": "0.00",
+      "currency_code": "EUR"
+    }
+  },
+  "tags": "Local Delivery Order",
+  "tax_exempt": false,
+  "tax_lines": [
+    {
+      "price": "1.56",
+      "rate": 0.21,
+      "title": "NL btw",
+      "price_set": {
+        "shop_money": {
+          "amount": "1.56",
+          "currency_code": "EUR"
+        },
+        "presentment_money": {
+          "amount": "1.56",
+          "currency_code": "EUR"
+        }
+      },
+      "channel_liable": false
+    }
+  ],
+  "taxes_included": true,
+  "test": false,
+  "token": "dcd9d9b4ffd492c58c1c1fd1ca7e220c",
+  "total_cash_rounding_payment_adjustment_set": {
+    "shop_money": {
+      "amount": "0.00",
+      "currency_code": "EUR"
+    },
+    "presentment_money": {
+      "amount": "0.00",
+      "currency_code": "EUR"
+    }
+  },
+  "total_cash_rounding_refund_adjustment_set": {
+    "shop_money": {
+      "amount": "0.00",
+      "currency_code": "EUR"
+    },
+    "presentment_money": {
+      "amount": "0.00",
+      "currency_code": "EUR"
+    }
+  },
+  "total_discounts": "190.00",
+  "total_discounts_set": {
+    "shop_money": {
+      "amount": "190.00",
+      "currency_code": "EUR"
+    },
+    "presentment_money": {
+      "amount": "190.00",
+      "currency_code": "EUR"
+    }
+  },
+  "total_line_items_price": "190.00",
+  "total_line_items_price_set": {
+    "shop_money": {
+      "amount": "190.00",
+      "currency_code": "EUR"
+    },
+    "presentment_money": {
+      "amount": "190.00",
+      "currency_code": "EUR"
+    }
+  },
+  "total_outstanding": "0.00",
+  "total_price": "8.99",
+  "total_price_set": {
+    "shop_money": {
+      "amount": "8.99",
+      "currency_code": "EUR"
+    },
+    "presentment_money": {
+      "amount": "8.99",
+      "currency_code": "EUR"
+    }
+  },
+  "total_shipping_price_set": {
+    "shop_money": {
+      "amount": "8.99",
+      "currency_code": "EUR"
+    },
+    "presentment_money": {
+      "amount": "8.99",
+      "currency_code": "EUR"
+    }
+  },
+  "total_tax": "1.56",
+  "total_tax_set": {
+    "shop_money": {
+      "amount": "1.56",
+      "currency_code": "EUR"
+    },
+    "presentment_money": {
+      "amount": "1.56",
+      "currency_code": "EUR"
+    }
+  },
+  "total_tip_received": "0.00",
+  "total_weight": 0,
+  "updated_at": "2026-03-05T10:04:00+01:00",
+  "user_id": null,
+  "billing_address": {
+    "first_name": "Kev",
+    "address1": "Sjeesstraat 22",
+    "phone": "+31643590678",
+    "city": "Purmerend",
+    "zip": "1445 NT",
+    "province": null,
+    "country": "Netherlands",
+    "last_name": "GG",
+    "address2": null,
+    "company": null,
+    "latitude": 52.4978548,
+    "longitude": 4.9808694,
+    "name": "Kev GG",
+    "country_code": "NL",
+    "province_code": null
+  },
+  "customer": {
+    "id": 23648601407832,
+    "created_at": "2026-02-09T15:33:50+01:00",
+    "updated_at": "2026-03-05T10:03:53+01:00",
+    "first_name": "Tiff",
+    "last_name": "Zhan",
+    "state": "disabled",
+    "note": null,
+    "verified_email": true,
+    "multipass_identifier": null,
+    "tax_exempt": false,
+    "email_marketing_consent": {
+      "state": "subscribed",
+      "opt_in_level": "single_opt_in",
+      "consent_updated_at": "2026-02-09T15:33:52+01:00"
+    },
+    "sms_marketing_consent": null,
+    "tags": "",
+    "email": "hyd1982@hotmail.com",
+    "phone": null,
+    "currency": "EUR",
+    "tax_exemptions": [],
+    "admin_graphql_api_id": "gid://shopify/Customer/23648601407832",
+    "default_address": {
+      "id": 33787045609816,
+      "customer_id": 23648601407832,
+      "first_name": "Kev",
+      "last_name": "GG",
+      "company": null,
+      "address1": "Sjeesstraat 22",
+      "address2": null,
+      "city": "Purmerend",
+      "province": null,
+      "country": "Netherlands",
+      "zip": "1445 NT",
+      "phone": "+31643590678",
+      "name": "Kev GG",
+      "province_code": null,
+      "country_code": "NL",
+      "country_name": "Netherlands",
+      "default": true
+    }
+  },
+  "discount_applications": [
+    {
+      "target_type": "line_item",
+      "type": "automatic",
+      "value": "190.0",
+      "value_type": "fixed_amount",
+      "allocation_method": "across",
+      "target_selection": "entitled",
+      "title": "ILOVEPIZZA"
+    }
+  ],
+  "fulfillments": [],
+  "line_items": [
+    {
+      "id": 35501245038936,
+      "admin_graphql_api_id": "gid://shopify/LineItem/35501245038936",
+      "attributed_staffs": [],
+      "current_quantity": 4,
+      "fulfillable_quantity": 4,
+      "fulfillment_service": "manual",
+      "fulfillment_status": null,
+      "gift_card": false,
+      "grams": 0,
+      "name": "Dairy Classics 4x",
+      "price": "47.50",
+      "price_set": {
+        "shop_money": {
+          "amount": "47.50",
+          "currency_code": "EUR"
+        },
+        "presentment_money": {
+          "amount": "47.50",
+          "currency_code": "EUR"
+        }
+      },
+      "product_exists": true,
+      "product_id": 15369021718872,
+      "properties": [
+        {
+          "name": "_ZapietId",
+          "value": "M=D&L=302644&D=2026-03-24T08:00:00Z&E=22:00"
+        }
+      ],
+      "quantity": 4,
+      "requires_shipping": true,
+      "sku": null,
+      "taxable": true,
+      "title": "Dairy Classics 4x",
+      "total_discount": "0.00",
+      "total_discount_set": {
+        "shop_money": {
+          "amount": "0.00",
+          "currency_code": "EUR"
+        },
+        "presentment_money": {
+          "amount": "0.00",
+          "currency_code": "EUR"
+        }
+      },
+      "variant_id": 55980209439064,
+      "variant_inventory_management": "shopify",
+      "variant_title": null,
+      "vendor": "Zietta",
+      "tax_lines": [
+        {
+          "channel_liable": false,
+          "price": "0.00",
+          "price_set": {
+            "shop_money": {
+              "amount": "0.00",
+              "currency_code": "EUR"
+            },
+            "presentment_money": {
+              "amount": "0.00",
+              "currency_code": "EUR"
+            }
+          },
+          "rate": 0.09,
+          "title": "NL btw"
+        }
+      ],
+      "duties": [],
+      "discount_allocations": [
+        {
+          "amount": "190.00",
+          "amount_set": {
+            "shop_money": {
+              "amount": "190.00",
+              "currency_code": "EUR"
+            },
+            "presentment_money": {
+              "amount": "190.00",
+              "currency_code": "EUR"
+            }
+          },
+          "discount_application_index": 0
+        }
+      ]
+    }
+  ],
+  "payment_terms": null,
+  "refunds": [],
+  "shipping_address": {
+    "first_name": "Kev",
+    "address1": "Sjeesstraat 22",
+    "phone": "+31643590678",
+    "city": "Purmerend",
+    "zip": "1445 NT",
+    "province": null,
+    "country": "Netherlands",
+    "last_name": "GG",
+    "address2": null,
+    "company": null,
+    "latitude": 52.4978548,
+    "longitude": 4.9808694,
+    "name": "Kev GG",
+    "country_code": "NL",
+    "province_code": null
+  },
+  "shipping_lines": [
+    {
+      "id": 11122098078040,
+      "carrier_identifier": null,
+      "code": "Standard Delivery 8 AM to 6 PM [9265666]",
+      "discounted_price": "8.99",
+      "discounted_price_set": {
+        "shop_money": {
+          "amount": "8.99",
+          "currency_code": "EUR"
+        },
+        "presentment_money": {
+          "amount": "8.99",
+          "currency_code": "EUR"
+        }
+      },
+      "is_removed": false,
+      "phone": null,
+      "price": "8.99",
+      "price_set": {
+        "shop_money": {
+          "amount": "8.99",
+          "currency_code": "EUR"
+        },
+        "presentment_money": {
+          "amount": "8.99",
+          "currency_code": "EUR"
+        }
+      },
+      "requested_fulfillment_service_id": null,
+      "source": "shopify",
+      "title": "Standard Delivery 8 AM to 6 PM",
+      "tax_lines": [
+        {
+          "channel_liable": false,
+          "price": "1.56",
+          "price_set": {
+            "shop_money": {
+              "amount": "1.56",
+              "currency_code": "EUR"
+            },
+            "presentment_money": {
+              "amount": "1.56",
+              "currency_code": "EUR"
+            }
+          },
+          "rate": 0.21,
+          "title": "NL btw"
+        }
+      ],
+      "discount_allocations": []
+    }
+  ]
+}
