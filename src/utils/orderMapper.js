@@ -173,10 +173,28 @@ function groupItemsIntoBoxes(lineItems, tagsMap, itemsPerBox = 12) {
 
 /**
  * Builds a SooCool order payload for the Pizza flow (delivery-only).
+ * Creates one good (box) per quantity unit so qty 2 = 2 goods in SooCool.
  */
 function buildPizzaPayload(order, deliveryWindow) {
     const address = mapAddress(order.shipping_address);
-    const contents = order.line_items.map((i) => `${i.name} x${i.quantity}`).join(', ');
+
+    // Build goods array: one good per physical box (quantity unit)
+    const goods = [];
+    const allGoodIds = [];
+    let goodIdCounter = -1;
+
+    for (const item of order.line_items) {
+        for (let q = 0; q < item.quantity; q++) {
+            goods.push({
+                goodId: goodIdCounter,
+                packagingType: 'box',
+                contents: sanitiseContents(`Pizza #${order.order_number}: ${item.name}`),
+                transportRequirements: ['cooled'],
+            });
+            allGoodIds.push(goodIdCounter);
+            goodIdCounter--;
+        }
+    }
 
     return {
         orderReference: `SHOPIFY-${order.order_number}`,
@@ -195,17 +213,10 @@ function buildPizzaPayload(order, deliveryWindow) {
                     phone: null,
                     mobile: sanitisePhone(order.shipping_address.phone),
                 },
-                goods: [-1],
+                goods: allGoodIds,
             },
         ],
-        goods: [
-            {
-                goodId: -1,
-                packagingType: 'box',
-                contents: sanitiseContents(`Pizza - Order #${order.order_number}: ${contents}`),
-                transportRequirements: ['cooled'],
-            },
-        ],
+        goods,
     };
 }
 
