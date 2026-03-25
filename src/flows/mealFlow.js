@@ -23,7 +23,7 @@ async function runMealFlow(order) {
     const tag = `[mealFlow][order:${order.order_number}]`;
     console.log(`${tag} Starting`);
 
-    const deliveryWindow = parseDeliveryWindow(order.note_attributes);
+    const deliveryWindow = parseDeliveryWindow(order.note_attributes, order.shipping_lines);
     console.log(`${tag} Delivery window:`, deliveryWindow);
 
     // Fetch product tags and group items into boxes

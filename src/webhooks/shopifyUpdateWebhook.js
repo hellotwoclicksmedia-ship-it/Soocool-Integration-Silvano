@@ -61,7 +61,7 @@ router.post('/orders/update', (req, res) => {
         // Parse new delivery window from note_attributes
         let newDeliveryWindow;
         try {
-            newDeliveryWindow = parseDeliveryWindow(order.note_attributes);
+            newDeliveryWindow = parseDeliveryWindow(order.note_attributes, order.shipping_lines);
         } catch (err) {
             console.warn(`${tag} Could not parse delivery window from updated order: ${err.message}`);
             return;

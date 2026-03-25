@@ -135,7 +135,7 @@ app.get('/test/update-order/:orderId', async (req, res) => {
         }
 
         // Parse delivery window and check time changes
-        const newDeliveryWindow = parseDeliveryWindow(order.note_attributes);
+        const newDeliveryWindow = parseDeliveryWindow(order.note_attributes, order.shipping_lines);
         const newDate = newDeliveryWindow.startTime;
         const oldDate = mapping.delivery_date;
 

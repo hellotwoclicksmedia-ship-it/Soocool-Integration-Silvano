@@ -6,40 +6,61 @@ const config = require('../config');
  *
  * Expects note_attributes entries:
  *   { name: 'Delivery-Date', value: '2026/02/28' }
- *   { name: 'Delivery-Time', value: '8:00 AM - 6:00 PM' }
+ *   { name: 'Delivery-Time', value: '8:00 AM - 6:00 PM' }  (optional if shippingLines provided)
+ *
+ * If Delivery-Time is missing, falls back to parsing the time from
+ * the shipping line title (e.g. "Afternoon Delivery 1PM to 6PM").
  *
  * @param {Array} noteAttributes
+ * @param {Array} [shippingLines] - order.shipping_lines from Shopify (optional fallback)
  * @returns {{ startTime: string, endTime: string }} ISO 8601 datetime strings
  */
-function parseDeliveryWindow(noteAttributes) {
+function parseDeliveryWindow(noteAttributes, shippingLines) {
     const attrs = {};
     for (const attr of (noteAttributes || [])) {
         attrs[attr.name] = attr.value;
     }
 
     const dateStr = attrs['Delivery-Date']; // e.g. "2026/02/28"
-    const timeStr = attrs['Delivery-Time']; // e.g. "8:00 AM - 6:00 PM"
-
-    if (!dateStr || !timeStr) {
-        throw new Error(`Missing Delivery-Date or Delivery-Time in note_attributes. Got: ${JSON.stringify(attrs)}`);
+    if (!dateStr) {
+        throw new Error(`Missing Delivery-Date in note_attributes. Got: ${JSON.stringify(attrs)}`);
     }
 
     // Normalise date: "2026/02/28" → "2026-02-28"
     const datePart = dateStr.replace(/\//g, '-');
 
-    // Parse time range: "8:00 AM - 6:00 PM"
-    const timeParts = timeStr.split('-').map((t) => t.trim());
-    if (timeParts.length !== 2) {
-        throw new Error(`Cannot parse Delivery-Time: "${timeStr}"`);
+    // ── Primary: try Delivery-Time from note_attributes ───────────────────
+    const timeStr = attrs['Delivery-Time']; // e.g. "8:00 AM - 6:00 PM"
+    if (timeStr) {
+        const timeParts = timeStr.split('-').map((t) => t.trim());
+        if (timeParts.length !== 2) {
+            throw new Error(`Cannot parse Delivery-Time: "${timeStr}"`);
+        }
+        const startTime = to24h(timeParts[0]);
+        const endTime = to24h(timeParts[1]);
+        return {
+            startTime: `${datePart}T${startTime}:00+01:00`,
+            endTime: `${datePart}T${endTime}:00+01:00`,
+        };
     }
 
-    const startTime = to24h(timeParts[0]);
-    const endTime = to24h(timeParts[1]);
+    // ── Fallback: try shipping line title ─────────────────────────────────
+    const shippingTitle = (shippingLines || [])[0]?.title || '';
+    if (shippingTitle) {
+        const parsed = parseTimeFromShippingTitle(shippingTitle);
+        if (parsed) {
+            console.log(`[orderMapper] Delivery-Time missing — parsed from shipping line: "${shippingTitle}" → ${parsed.startTime24h}-${parsed.endTime24h}`);
+            return {
+                startTime: `${datePart}T${parsed.startTime24h}:00+01:00`,
+                endTime: `${datePart}T${parsed.endTime24h}:00+01:00`,
+            };
+        }
+    }
 
-    return {
-        startTime: `${datePart}T${startTime}:00+01:00`,
-        endTime: `${datePart}T${endTime}:00+01:00`,
-    };
+    throw new Error(
+        `Missing Delivery-Time in note_attributes and could not parse time from shipping line "${shippingTitle}". ` +
+        `note_attributes: ${JSON.stringify(attrs)}`
+    );
 }
 
 
@@ -52,6 +73,81 @@ function to24h(timeStr) {
     if (meridiem.toUpperCase() === 'PM' && h !== 12) h += 12;
     if (meridiem.toUpperCase() === 'AM' && h === 12) h = 0;
     return `${String(h).padStart(2, '0')}:${m}`;
+}
+
+/**
+ * Converts a bare hour + meridiem (e.g. "1PM", "12AM") to 24-hour HH:MM.
+ */
+function bareHourTo24h(hourStr, meridiem) {
+    let h = parseInt(hourStr, 10);
+    const m = meridiem.toUpperCase();
+    if (m === 'PM' && h !== 12) h += 12;
+    if (m === 'AM' && h === 12) h = 0;
+    return `${String(h).padStart(2, '0')}:00`;
+}
+
+/**
+ * Extracts a start/end time window from a Shopify shipping line title.
+ *
+ * Handles a wide variety of formats found in shipping rate names:
+ *   "Afternoon Delivery 1PM to 6PM"
+ *   "Morning Delivery 8AM - 12PM"
+ *   "Evening 6:00 PM - 9:00 PM"
+ *   "Delivery 08:00-18:00"
+ *   "Same Day 1 PM to 6 PM"
+ *   "Next Day 8:00AM-6:00PM"
+ *
+ * @param {string} title - shipping line title
+ * @returns {{ startTime24h: string, endTime24h: string } | null}
+ */
+function parseTimeFromShippingTitle(title) {
+    if (!title) return null;
+
+    // Pattern 1: "H:MM AM/PM - H:MM AM/PM" or "H:MM AM/PM to H:MM AM/PM"
+    //   e.g. "6:00 PM - 9:00 PM", "8:00AM to 6:00PM"
+    let match = title.match(
+        /(\d{1,2}):(\d{2})\s*(AM|PM)\s*(?:-|to)\s*(\d{1,2}):(\d{2})\s*(AM|PM)/i
+    );
+    if (match) {
+        const start = to24h(`${match[1]}:${match[2]} ${match[3]}`);
+        const end = to24h(`${match[4]}:${match[5]} ${match[6]}`);
+        return { startTime24h: start, endTime24h: end };
+    }
+
+    // Pattern 2: "HAM/PM to HPM/AM" or "HAM/PM - HPM/AM" (no colon, no space)
+    //   e.g. "1PM to 6PM", "8AM-12PM"
+    match = title.match(
+        /(\d{1,2})\s*(AM|PM)\s*(?:-|to)\s*(\d{1,2})\s*(AM|PM)/i
+    );
+    if (match) {
+        const start = bareHourTo24h(match[1], match[2]);
+        const end = bareHourTo24h(match[3], match[4]);
+        return { startTime24h: start, endTime24h: end };
+    }
+
+    // Pattern 3: "H AM/PM to H AM/PM" (space between hour and meridiem)
+    //   e.g. "1 PM to 6 PM", "8 AM - 12 PM"
+    match = title.match(
+        /(\d{1,2})\s+(AM|PM)\s*(?:-|to)\s*(\d{1,2})\s+(AM|PM)/i
+    );
+    if (match) {
+        const start = bareHourTo24h(match[1], match[2]);
+        const end = bareHourTo24h(match[3], match[4]);
+        return { startTime24h: start, endTime24h: end };
+    }
+
+    // Pattern 4: 24-hour format "HH:MM-HH:MM" or "HH:MM to HH:MM"
+    //   e.g. "08:00-18:00", "8:00 to 18:00"
+    match = title.match(
+        /(\d{1,2}):(\d{2})\s*(?:-|to)\s*(\d{1,2}):(\d{2})(?!\s*[APap])/
+    );
+    if (match) {
+        const sh = String(parseInt(match[1], 10)).padStart(2, '0');
+        const eh = String(parseInt(match[3], 10)).padStart(2, '0');
+        return { startTime24h: `${sh}:${match[2]}`, endTime24h: `${eh}:${match[4]}` };
+    }
+
+    return null;
 }
 
 /**
@@ -298,6 +394,7 @@ function buildMealPayload(order, deliveryWindow, boxGroups) {
 
 module.exports = {
     parseDeliveryWindow,
+    parseTimeFromShippingTitle,
     buildPizzaPayload,
     buildMealPayload,
     groupItemsIntoBoxes,
