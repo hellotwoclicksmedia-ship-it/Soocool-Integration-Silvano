@@ -111,13 +111,17 @@ app.get('/test/update-order/:orderId', async (req, res) => {
         const order = orderRes.data.order;
         console.log(`${tag} Order #${order.order_number} found`);
 
-        // Look up existing mapping
+        // Look up existing mapping — upsert if not found
         const mapping = store.getMappingByShopifyId(order.id);
         if (!mapping) {
-            return res.status(404).json({
-                error: 'No SooCool mapping found for this order',
-                hint: `First create the order via /test/order/${orderId}`,
-            });
+            console.log(`${tag} No SooCool mapping — running create flow (upsert)`);
+            const flow = flowOverride || await detectFlow(order.line_items);
+            if (flow === 'unknown') {
+                return res.status(400).json({ error: 'Could not detect flow', hint: 'Add ?flow=meal or ?flow=pizza' });
+            }
+            const runner = flow === 'pizza' ? runPizzaFlow : runMealFlow;
+            const result = await runner(order);
+            return res.json({ status: 'ok', action: 'created (upsert)', flow, result });
         }
 
         console.log(`${tag} Found SooCool mapping: soocoolOrderId=${mapping.soocool_order_id}, flow=${mapping.flow}, storedDate=${mapping.delivery_date}`);
@@ -189,6 +193,50 @@ app.get('/test/update-order/:orderId', async (req, res) => {
             pdfPath,
             soocoolResponse: updateResult,
         });
+    } catch (err) {
+        console.error(`${tag} Error:`, err.message);
+        res.status(500).json({
+            error: err.message,
+            soocoolError: err.response?.data || null,
+        });
+    }
+});
+
+/**
+ * RETRY ENDPOINT — Re-run the create flow for a failed order.
+ * Usage: GET /test/retry-order/<shopifyOrderId>?flow=meal
+ * Fetches the order from Shopify and runs the create flow regardless of existing mapping.
+ */
+app.get('/test/retry-order/:orderId', async (req, res) => {
+    const { orderId } = req.params;
+    const flowOverride = req.query.flow || null;
+    const tag = `[retryEndpoint][order:${orderId}]`;
+
+    try {
+        console.log(`${tag} Fetching order from Shopify...`);
+        const shopifyClient = axios.create({
+            baseURL: `https://${config.shopify.storeUrl}/admin/api/2024-04`,
+            headers: { 'X-Shopify-Access-Token': config.shopify.accessToken },
+        });
+
+        const orderRes = await shopifyClient.get(`/orders/${orderId}.json`);
+        const order = orderRes.data.order;
+        console.log(`${tag} Order #${order.order_number} found`);
+
+        let flow = flowOverride;
+        if (!flow) {
+            flow = await detectFlow(order.line_items);
+        }
+        if (flow === 'unknown') {
+            return res.status(400).json({ error: 'Could not detect flow', hint: 'Add ?flow=meal or ?flow=pizza' });
+        }
+
+        console.log(`${tag} Running ${flow} flow (retry)...`);
+        const runner = flow === 'pizza' ? runPizzaFlow : runMealFlow;
+        const result = await runner(order);
+
+        console.log(`${tag} Done!`, result);
+        res.json({ status: 'ok', action: 'retried', flow, result });
     } catch (err) {
         console.error(`${tag} Error:`, err.message);
         res.status(500).json({

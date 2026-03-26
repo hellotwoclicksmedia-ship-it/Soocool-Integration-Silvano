@@ -7,6 +7,9 @@ const soocool = require('../soocool/client');
 const shopify = require('../shopify/client');
 const { parseDeliveryWindow, buildPizzaPayload, buildMealPayload, groupItemsIntoBoxes } = require('../utils/orderMapper');
 const { generateOrderPdf } = require('../utils/pdfGenerator');
+const { detectFlow } = require('../utils/flowDetector');
+const { runPizzaFlow } = require('../flows/pizzaFlow');
+const { runMealFlow } = require('../flows/mealFlow');
 
 const router = express.Router();
 
@@ -54,7 +57,17 @@ router.post('/orders/update', (req, res) => {
         // Look up existing mapping in DB
         const mapping = store.getMappingByShopifyId(order.id);
         if (!mapping) {
-            console.log(`${tag} No existing SooCool mapping found — skipping (order may not have been processed)`);
+            // No mapping = order was never successfully created in SooCool (e.g. initial 400 error).
+            // Upsert: detect flow and run the full create flow instead of skipping.
+            console.log(`${tag} No existing SooCool mapping — attempting to create order (upsert)`);
+            const flow = await detectFlow(order.line_items);
+            if (flow === 'unknown') {
+                console.warn(`${tag} Cannot detect flow for upsert — skipping`);
+                return;
+            }
+            const runner = flow === 'pizza' ? runPizzaFlow : runMealFlow;
+            await runner(order);
+            console.log(`${tag} ✅ Order created in SooCool via update webhook (upsert)`);
             return;
         }
 

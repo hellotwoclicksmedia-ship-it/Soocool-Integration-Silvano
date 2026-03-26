@@ -11,7 +11,7 @@ const client = axios.create({
     timeout: 15000,
 });
 
-// Log errors centrally
+// Log errors centrally — capture full response body for debugging
 client.interceptors.response.use(
     (res) => res,
     (err) => {
@@ -19,9 +19,16 @@ client.interceptors.response.use(
         console.error('[soocool] API error', {
             status: err.response?.status,
             url: err.config?.url,
+            method: err.config?.method?.toUpperCase(),
             traceId: data?.traceId,
             message: data?.message || err.message,
         });
+        // Log full response body so we can see validation errors etc.
+        if (data && typeof data === 'object') {
+            console.error('[soocool] Full error response:', JSON.stringify(data, null, 2));
+        } else if (data) {
+            console.error('[soocool] Error response body:', data);
+        }
         return Promise.reject(err);
     }
 );
