@@ -64,27 +64,38 @@ function parseDeliveryWindow(noteAttributes, shippingLines) {
     const datePart = dateStr.replace(/\//g, '-');
     const offset = getNlOffset(datePart);
 
-    // ── SooCool agreed time window ───────────────────────────────────────
-    // The SooCool contract only allows the 08:00–18:00 delivery window.
-    // Regardless of what Shopify shipping option the customer selects
-    // (e.g. "Afternoon Delivery 1PM to 6PM"), we always send the agreed
-    // full-day window to SooCool. The Shopify time is for customer comms only.
-    const AGREED_START = '08:00';
-    const AGREED_END   = '18:00';
-
-    // Log what the customer selected for debugging
-    const timeStr = attrs['Delivery-Time'];
-    const shippingTitle = (shippingLines || [])[0]?.title || '';
+    // ── Primary: try Delivery-Time from note_attributes ───────────────────
+    const timeStr = attrs['Delivery-Time']; // e.g. "8:00 AM - 6:00 PM"
     if (timeStr) {
-        console.log(`[orderMapper] Customer selected Delivery-Time: "${timeStr}" — using agreed SooCool window ${AGREED_START}-${AGREED_END}`);
-    } else if (shippingTitle) {
-        console.log(`[orderMapper] Shipping line: "${shippingTitle}" — using agreed SooCool window ${AGREED_START}-${AGREED_END}`);
+        const timeParts = timeStr.split('-').map((t) => t.trim());
+        if (timeParts.length !== 2) {
+            throw new Error(`Cannot parse Delivery-Time: "${timeStr}"`);
+        }
+        const startTime = to24h(timeParts[0]);
+        const endTime = to24h(timeParts[1]);
+        return {
+            startTime: `${datePart}T${startTime}:00${offset}`,
+            endTime: `${datePart}T${endTime}:00${offset}`,
+        };
     }
 
-    return {
-        startTime: `${datePart}T${AGREED_START}:00${offset}`,
-        endTime: `${datePart}T${AGREED_END}:00${offset}`,
-    };
+    // ── Fallback: try shipping line title ─────────────────────────────────
+    const shippingTitle = (shippingLines || [])[0]?.title || '';
+    if (shippingTitle) {
+        const parsed = parseTimeFromShippingTitle(shippingTitle);
+        if (parsed) {
+            console.log(`[orderMapper] Delivery-Time missing — parsed from shipping line: "${shippingTitle}" → ${parsed.startTime24h}-${parsed.endTime24h}`);
+            return {
+                startTime: `${datePart}T${parsed.startTime24h}:00${offset}`,
+                endTime: `${datePart}T${parsed.endTime24h}:00${offset}`,
+            };
+        }
+    }
+
+    throw new Error(
+        `Missing Delivery-Time in note_attributes and could not parse time from shipping line "${shippingTitle}". ` +
+        `note_attributes: ${JSON.stringify(attrs)}`
+    );
 }
 
 
