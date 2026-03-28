@@ -1,0 +1,89 @@
+﻿Payload has 2 goods
+Goods IDs: [ -1, -2 ]
+
+Sending to SooCool staging: https://api.staging.soocool.nl/order
+SUCCESS! SooCool order created: 12777
+Response: {
+  "orderId": 12777,
+  "ourReference": null,
+  "orderReference": "SHOPIFY-1179",
+  "cancelled": false,
+  "webhook": {
+    "webhookUrl": "http://localhost:3000/webhooks/soocool/updates",
+    "webhookUpdates": [
+      "task_state"
+    ]
+  },
+  "tasks": [
+    {
+      "taskId": 25622,
+      "requestedTaskId": -1,
+      "taskType": "delivery",
+      "taskState": "processing",
+      "trackAndTraceLink": null,
+      "trackAndTraceInfo": null,
+      "timeWindow": {
+        "startTime": "2026-03-23T08:00:00+01:00",
+        "endTime": "2026-03-23T18:00:00+01:00"
+      },
+      "instructions": null,
+      "address": {
+        "organization": null,
+        "person": "Fleur Van Sonneke",
+        "location": null,
+        "street": "Cranberrylaan",
+        "houseNumber": "23",
+        "city": "Almere",
+        "postCode": "1326JR",
+        "country": "NL",
+        "gps": {
+          "latitude": 52.36980056762695,
+          "longitude": 5.254179954528809
+        }
+      },
+      "contactInfo": {
+        "email": "fleur.vanson@hotmail.com",
+        "phone": null,
+        "mobile": "0653865951"
+      },
+      "goods": [
+        810786,
+        810787
+      ]
+    }
+  ],
+  "goods": [
+    {
+      "goodId": 810786,
+      "requestedGoodId": -1,
+      "packagingType": "box",
+      "dimensions": {
+        "width": null,
+        "depth": null,
+        "height": null
+      },
+      "weight": null,
+      "contents": "Pizza #1179: Vesuvio Pair Bundle 4x",
+      "barcode": "SCA0000810786",
+      "transportRequirements": [
+        "cooled"
+      ]
+    },
+    {
+      "goodId": 810787,
+      "requestedGoodId": -2,
+      "packagingType": "box",
+      "dimensions": {
+        "width": null,
+        "depth": null,
+        "height": null
+      },
+      "weight": null,
+      "contents": "Pizza #1179: Vesuvio Pair Bundle 4x",
+      "barcode": "SCA0000810787",
+      "transportRequirements": [
+        "cooled"
+      ]
+    }
+  ]
+}

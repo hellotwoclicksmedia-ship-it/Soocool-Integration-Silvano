@@ -1,0 +1,81 @@
+{
+  "orderId": 12714,
+  "ourReference": "56977",
+  "orderReference": "SHOPIFY-1174",
+  "cancelled": false,
+  "webhook": {
+    "webhookUrl": "http://localhost:3000/webhooks/soocool/updates",
+    "webhookUpdates": [
+      "task_state"
+    ]
+  },
+  "tasks": [
+    {
+      "taskId": 25551,
+      "taskType": "delivery",
+      "taskState": "accepted",
+      "trackAndTraceLink": "https://track-test.soocool.nl:8443/TrackAndTrace/tnt?Tracecode=MXTT3546EC59282137C5&OrderId=56977",
+      "trackAndTraceInfo": null,
+      "timeWindow": {
+        "startTime": "2026-03-18T08:00:00+01:00",
+        "endTime": "2026-03-18T18:00:00+01:00"
+      },
+      "instructions": null,
+      "address": {
+        "organization": null,
+        "person": "Fleur de Jong",
+        "location": null,
+        "street": "Baambrugse Zuwe",
+        "houseNumber": "11B",
+        "city": "Vinkeveen",
+        "postCode": "3645AA",
+        "country": "NL",
+        "gps": {
+          "latitude": 52.220710754395,
+          "longitude": 4.9342799186707
+        }
+      },
+      "contactInfo": {
+        "email": "realesilvano@gmail.com",
+        "phone": null,
+        "mobile": "+31628067242"
+      },
+      "goods": [
+        810616,
+        810617
+      ]
+    }
+  ],
+  "goods": [
+    {
+      "goodId": 810616,
+      "packagingType": "box",
+      "dimensions": {
+        "width": null,
+        "depth": null,
+        "height": null
+      },
+      "weight": 3280,
+      "contents": "Italian Forest bundle 12 box",
+      "barcode": "SCA0000810616",
+      "transportRequirements": [
+        "cooled"
+      ]
+    },
+    {
+      "goodId": 810617,
+      "packagingType": "box",
+      "dimensions": {
+        "width": null,
+        "depth": null,
+        "height": null
+      },
+      "weight": 3280,
+      "contents": "Italian Classics bundle 12 box",
+      "barcode": "SCA0000810617",
+      "transportRequirements": [
+        "cooled"
+      ]
+    }
+  ]
+}

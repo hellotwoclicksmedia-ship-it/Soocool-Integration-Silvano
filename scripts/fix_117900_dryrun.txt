@@ -1,0 +1,101 @@
+﻿=== Fix Order #117900 (SooCool #233872) ===
+Mode: ≡ƒƒó DRY RUN ΓÇö no changes will be made
+SooCool URL: https://api.staging.soocool.nl
+
+[1/4] Fetching order from Shopify...
+  Found: Shopify ID 12185982533976, order #1179
+  Line items:
+    - Vesuvio Pair Bundle 4x | qty: 2
+
+[2/4] Building fixed payload...
+  Goods count: 2
+  Good IDs: [-1, -2]
+    - goodId: -1, contents: "Pizza #1179: Vesuvio Pair Bundle 4x"
+    - goodId: -2, contents: "Pizza #1179: Vesuvio Pair Bundle 4x"
+
+[3/4] Checking current SooCool order state...
+node :   Could not 
+fetch current order: 
+404 Request failed 
+with status code 404
+At line:1 char:1
++ node scripts/fix_or
+der_117900.js 2>&1 | 
+Out-File -Encoding 
+utf8 scrip ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
+    + CategoryInfo   
+           : 
+NotSpecified: (  Cou 
+   ld not 
+fet...status cod    
+e 404:String) [], 
+Remot    eException
+    + FullyQualifiedE
+rrorId     : 
+NativeCommandError
+ 
+  Proceeding 
+cautiously...
+
+[4/4] DRY RUN ΓÇö Skipping update.
+
+≡ƒôï Payload that WOULD be sent:
+{
+  "orderReference": "SHOPIFY-1179",
+  "webhook": {
+    "webhookUrl": "http://localhost:3000/webhooks/soocool/updates",
+    "webhookUpdates": [
+      "task_state"
+    ]
+  },
+  "tasks": [
+    {
+      "taskType": "delivery",
+      "timeWindow": {
+        "startTime": "2026-03-23T08:00:00+01:00",
+        "endTime": "2026-03-23T18:00:00+01:00"
+      },
+      "instructions": null,
+      "address": {
+        "person": "Fleur Van Sonneke",
+        "street": "Cranberrylaan",
+        "houseNumber": "23",
+        "city": "Almere",
+        "postCode": "1326JR",
+        "country": "NL"
+      },
+      "contactInfo": {
+        "email": "fleur.vanson@hotmail.com",
+        "phone": null,
+        "mobile": "0653865951"
+      },
+      "goods": [
+        -1,
+        -2
+      ]
+    }
+  ],
+  "goods": [
+    {
+      "goodId": -1,
+      "packagingType": "box",
+      "contents": "Pizza #1179: Vesuvio Pair Bundle 4x",
+      "transportRequirements": [
+        "cooled"
+      ]
+    },
+    {
+      "goodId": -2,
+      "packagingType": "box",
+      "contents": "Pizza #1179: Vesuvio Pair Bundle 4x",
+      "transportRequirements": [
+        "cooled"
+      ]
+    }
+  ]
+}
+
+Γ£à Dry run complete. To apply, run:
+   node scripts/fix_order_117900.js --execute
