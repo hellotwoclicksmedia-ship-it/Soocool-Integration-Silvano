@@ -64,26 +64,41 @@ function parseDeliveryWindow(noteAttributes, shippingLines) {
     const datePart = dateStr.replace(/\//g, '-');
     const offset = getNlOffset(datePart);
 
-    // ── SooCool agreed time window: always 08:00–18:00 ───────────────────
-    // The SooCool contract only allows the 08:00–18:00 delivery window.
-    // Regardless of what Shopify shipping option the customer selects
-    // (e.g. "Afternoon Delivery 1PM to 6PM"), we always send the agreed
-    // full-day window to SooCool.
-    const AGREED_START = '08:00';
-    const AGREED_END   = '18:00';
+    // ── Parse time window from order data ─────────────────────────────────
+    // 1) Try Delivery-Time note attribute  (e.g. "8:00 AM - 8:00 PM")
+    // 2) Fall back to shipping line title   (e.g. "Afternoon Delivery 1PM to 6PM")
+    // 3) Default to 08:00–20:00 if nothing found
+    const timeStr = attrs['Delivery-Time']; // e.g. "8:00 AM - 8:00 PM"
+    let startTime24h = '08:00';
+    let endTime24h   = '20:00';
 
-    // Log what the customer selected for debugging
-    const timeStr = attrs['Delivery-Time'];
-    const shippingTitle = (shippingLines || [])[0]?.title || '';
     if (timeStr) {
-        console.log(`[orderMapper] Customer selected Delivery-Time: "${timeStr}" — using agreed SooCool window ${AGREED_START}-${AGREED_END}`);
-    } else if (shippingTitle) {
-        console.log(`[orderMapper] Shipping line: "${shippingTitle}" — using agreed SooCool window ${AGREED_START}-${AGREED_END}`);
+        const parts = timeStr.split(/\s*-\s*/);
+        if (parts.length === 2) {
+            startTime24h = to24h(parts[0].trim());
+            endTime24h   = to24h(parts[1].trim());
+        }
+        console.log(`[orderMapper] Parsed Delivery-Time: "${timeStr}" → ${startTime24h}-${endTime24h}`);
+    } else {
+        // Fallback: try to parse from shipping line title
+        const shippingTitle = (shippingLines || [])[0]?.title || '';
+        if (shippingTitle) {
+            const parsed = parseTimeFromShippingTitle(shippingTitle);
+            if (parsed) {
+                startTime24h = parsed.startTime24h;
+                endTime24h   = parsed.endTime24h;
+                console.log(`[orderMapper] Parsed shipping title: "${shippingTitle}" → ${startTime24h}-${endTime24h}`);
+            } else {
+                console.log(`[orderMapper] Could not parse time from shipping title: "${shippingTitle}" — using default ${startTime24h}-${endTime24h}`);
+            }
+        } else {
+            console.log(`[orderMapper] No Delivery-Time or shipping title found — using default ${startTime24h}-${endTime24h}`);
+        }
     }
 
     return {
-        startTime: `${datePart}T${AGREED_START}:00${offset}`,
-        endTime: `${datePart}T${AGREED_END}:00${offset}`,
+        startTime: `${datePart}T${startTime24h}:00${offset}`,
+        endTime: `${datePart}T${endTime24h}:00${offset}`,
     };
 }
 
