@@ -64,28 +64,26 @@ async function getShippingLabel(soocoolOrderId) {
 }
 
 /**
- * States where a SooCool order can still be cancelled.
- * Once 'in_transit' or 'delivered' it's too late.
- */
-const CANCELLABLE_STATES = new Set(['accepted', 'planned', 'allocated']);
-
-/**
  * DELETE /order/{orderId} — cancel an order in SooCool.
- * Returns true if cancelled, false if already too late.
+ * Always sends the DELETE and lets SooCool decide if cancellation is allowed.
+ * Returns { cancelled: true } on success, { cancelled: false, reason } on 4xx.
  */
 async function cancelOrder(soocoolOrderId) {
-    // Check current state first
-    const order = await getOrder(soocoolOrderId);
-    const state = order?.tasks?.[0]?.taskState || order?.taskState;
-
-    if (!CANCELLABLE_STATES.has(state)) {
-        console.warn(`[soocool] Cannot cancel order ${soocoolOrderId} — state is "${state}"`);
-        return { cancelled: false, reason: `Order already in state: ${state}` };
+    console.log(`[soocool] Sending DELETE /order/${soocoolOrderId} to cancel...`);
+    try {
+        await client.delete(`/order/${soocoolOrderId}`);
+        console.log(`[soocool] Order ${soocoolOrderId} cancelled successfully`);
+        return { cancelled: true };
+    } catch (err) {
+        const status = err.response?.status;
+        if (status && status >= 400 && status < 500) {
+            const msg = err.response?.data?.message || err.message;
+            console.warn(`[soocool] Cannot cancel order ${soocoolOrderId} — API returned ${status}: ${msg}`);
+            return { cancelled: false, reason: `API ${status}: ${msg}` };
+        }
+        // 5xx or network error — rethrow so caller can log it
+        throw err;
     }
-
-    await client.delete(`/order/${soocoolOrderId}`);
-    console.log(`[soocool] Order ${soocoolOrderId} cancelled successfully`);
-    return { cancelled: true };
 }
 
 /**

@@ -247,6 +247,45 @@ app.get('/test/retry-order/:orderId', async (req, res) => {
 });
 
 /**
+ * CANCEL ENDPOINT — Cancel an order in SooCool by Shopify order number.
+ * Usage: GET /test/cancel-order/118400
+ */
+app.get('/test/cancel-order/:orderNumber', async (req, res) => {
+    const { orderNumber } = req.params;
+    const tag = `[cancelEndpoint][order:#${orderNumber}]`;
+
+    try {
+        const store = require('./db/store');
+        const soocool = require('./soocool/client');
+
+        const mapping = store.getMappingByOrderNumber(orderNumber);
+        if (!mapping) {
+            console.warn(`${tag} No SooCool mapping found in DB`);
+            return res.status(404).json({ error: 'No SooCool mapping found for this order number' });
+        }
+
+        const soocoolOrderId = mapping.soocool_order_id;
+        console.log(`${tag} Found SooCool order ID: ${soocoolOrderId} — sending cancel...`);
+
+        const result = await soocool.cancelOrder(soocoolOrderId);
+
+        if (result.cancelled) {
+            console.log(`${tag} ✅ Cancelled successfully`);
+        } else {
+            console.warn(`${tag} ⚠️ Not cancelled: ${result.reason}`);
+        }
+
+        res.json({ status: 'ok', orderNumber, soocoolOrderId, ...result });
+    } catch (err) {
+        console.error(`${tag} Error:`, err.message);
+        res.status(500).json({
+            error: err.message,
+            soocoolError: err.response?.data || null,
+        });
+    }
+});
+
+/**
  * DASHBOARD — View recent orders and download PDFs
  */
 app.get('/dashboard', (req, res) => {
