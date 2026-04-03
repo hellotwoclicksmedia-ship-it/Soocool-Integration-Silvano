@@ -57,17 +57,10 @@ router.post('/orders/update', (req, res) => {
         // Look up existing mapping in DB
         const mapping = store.getMappingByShopifyId(order.id);
         if (!mapping) {
-            // No mapping = order was never successfully created in SooCool (e.g. initial 400 error).
-            // Upsert: detect flow and run the full create flow instead of skipping.
-            console.log(`${tag} No existing SooCool mapping — attempting to create order (upsert)`);
-            const flow = await detectFlow(order.line_items);
-            if (flow === 'unknown') {
-                console.warn(`${tag} Cannot detect flow for upsert — skipping`);
-                return;
-            }
-            const runner = flow === 'pizza' ? runPizzaFlow : runMealFlow;
-            await runner(order);
-            console.log(`${tag} ✅ Order created in SooCool via update webhook (upsert)`);
+            // No mapping = order hasn't been created in SooCool yet.
+            // Don't attempt to create here — the orders/create webhook handles that.
+            // Creating here causes duplicates due to race conditions.
+            console.log(`${tag} No existing SooCool mapping — skipping (create webhook will handle it)`);
             return;
         }
 
