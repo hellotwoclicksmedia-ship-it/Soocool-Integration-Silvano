@@ -18,7 +18,7 @@ router.post('/updates', async (req, res) => {
     console.log(`${tag} Received update:`, JSON.stringify(body));
 
     const soocoolOrderId = body?.orderId;
-    const taskState = body?.taskState;
+    const taskState = body?.taskState || body?.tasks?.[0]?.taskState;
     const orderReference = body?.orderReference; // e.g. "SHOPIFY-1234"
 
     if (!soocoolOrderId && !orderReference) {
