@@ -8,7 +8,7 @@ const soocool = require('../soocool/client');
 const router = express.Router();
 
 /**
- * POST /webhooks/shopify/orders/cancel
+ * POST /webhooks/shopify/cancel
  * Triggered by Shopify "orders/cancelled" webhook.
  *
  * Looks up the SooCool order in the DB and cancels it if still possible.
@@ -16,7 +16,7 @@ const router = express.Router();
  *   accepted | planned | allocated
  * Once in_transit or delivered, it's too late.
  */
-router.post('/orders/cancel', (req, res) => {
+router.post('/cancel', (req, res) => {
     // Verify HMAC
     const hmac = req.headers['x-shopify-hmac-sha256'];
     const digest = crypto
