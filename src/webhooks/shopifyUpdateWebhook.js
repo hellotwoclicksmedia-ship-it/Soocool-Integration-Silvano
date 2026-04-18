@@ -5,7 +5,7 @@ const config = require('../config');
 const store = require('../db/store');
 const soocool = require('../soocool/client');
 const shopify = require('../shopify/client');
-const { parseDeliveryWindow, buildPizzaPayload, buildMealPayload, groupItemsIntoBoxes } = require('../utils/orderMapper');
+const { parseDeliveryWindow, buildPizzaPayload, buildMealPayload, groupItemsIntoBoxesFromGraphQL } = require('../utils/orderMapper');
 const { generateOrderPdf } = require('../utils/pdfGenerator');
 const { detectFlow } = require('../utils/flowDetector');
 const { runPizzaFlow } = require('../flows/pizzaFlow');
@@ -89,10 +89,9 @@ router.post('/orders/update', (req, res) => {
         const flow = mapping.flow;
 
         if (flow === 'meal') {
-            // Fetch product tags to rebuild box groups
-            const productIds = order.line_items.map(i => i.product_id);
-            const tagsMap = await shopify.getProductTags(productIds);
-            const boxGroups = groupItemsIntoBoxes(order.line_items, tagsMap);
+            // Fetch bundle groups via GraphQL
+            const bundleGroups = await shopify.getOrderBundleGroups(order.id);
+            const boxGroups = groupItemsIntoBoxesFromGraphQL(order.line_items, bundleGroups);
             payload = buildMealPayload(order, newDeliveryWindow, boxGroups);
         } else {
             payload = buildPizzaPayload(order, newDeliveryWindow);
@@ -113,9 +112,8 @@ router.post('/orders/update', (req, res) => {
                 console.warn(`${tag} Could not fetch updated shipping label: ${err.message}`);
             }
 
-            const productIds = order.line_items.map(i => i.product_id);
-            const tagsMap = await shopify.getProductTags(productIds);
-            const boxGroups = groupItemsIntoBoxes(order.line_items, tagsMap);
+            const bundleGroups2 = await shopify.getOrderBundleGroups(order.id);
+            const boxGroups = groupItemsIntoBoxesFromGraphQL(order.line_items, bundleGroups2);
 
             const pdfPath = await generateOrderPdf({ order, deliveryWindow: newDeliveryWindow, labelBuffer, boxGroups });
             console.log(`${tag} PDF regenerated: ${pdfPath}`);

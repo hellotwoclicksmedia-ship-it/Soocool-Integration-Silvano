@@ -99,7 +99,7 @@ app.get('/test/update-order/:orderId', async (req, res) => {
         const store = require('./db/store');
         const soocool = require('./soocool/client');
         const shopify = require('./shopify/client');
-        const { parseDeliveryWindow, buildPizzaPayload, buildMealPayload, groupItemsIntoBoxes } = require('./utils/orderMapper');
+        const { parseDeliveryWindow, buildPizzaPayload, buildMealPayload, groupItemsIntoBoxesFromGraphQL } = require('./utils/orderMapper');
 
         console.log(`${tag} Fetching order from Shopify...`);
         const shopifyClient = axios.create({
@@ -148,9 +148,8 @@ app.get('/test/update-order/:orderId', async (req, res) => {
         // Build payload based on flow type
         let payload;
         if (mapping.flow === 'meal') {
-            const productIds = order.line_items.map(i => i.product_id);
-            const tagsMap = await shopify.getProductTags(productIds);
-            const boxGroups = groupItemsIntoBoxes(order.line_items, tagsMap);
+            const bundleGroups = await shopify.getOrderBundleGroups(order.id);
+            const boxGroups = groupItemsIntoBoxesFromGraphQL(order.line_items, bundleGroups);
             payload = buildMealPayload(order, newDeliveryWindow, boxGroups);
         } else {
             payload = buildPizzaPayload(order, newDeliveryWindow);
@@ -172,9 +171,8 @@ app.get('/test/update-order/:orderId', async (req, res) => {
                 console.warn(`${tag} Could not fetch updated shipping label: ${err.message}`);
             }
 
-            const productIds2 = order.line_items.map(i => i.product_id);
-            const tagsMap2 = await shopify.getProductTags(productIds2);
-            const boxGroups2 = groupItemsIntoBoxes(order.line_items, tagsMap2);
+            const bundleGroups2 = await shopify.getOrderBundleGroups(order.id);
+            const boxGroups2 = groupItemsIntoBoxesFromGraphQL(order.line_items, bundleGroups2);
 
             pdfPath = await generateOrderPdf({ order, deliveryWindow: newDeliveryWindow, labelBuffer, boxGroups: boxGroups2 });
             console.log(`${tag} PDF regenerated: ${pdfPath}`);

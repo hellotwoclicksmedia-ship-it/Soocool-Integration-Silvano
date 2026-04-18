@@ -2,7 +2,7 @@
 const soocool = require('../soocool/client');
 const shopify = require('../shopify/client');
 const store = require('../db/store');
-const { parseDeliveryWindow, buildMealPayload, groupItemsIntoBoxes } = require('../utils/orderMapper');
+const { parseDeliveryWindow, buildMealPayload, groupItemsIntoBoxesFromGraphQL } = require('../utils/orderMapper');
 const { generateOrderPdf } = require('../utils/pdfGenerator');
 
 /**
@@ -10,7 +10,7 @@ const { generateOrderPdf } = require('../utils/pdfGenerator');
  *
  * Flow:
  *  1. Parse delivery window from note_attributes (customer delivery date/time)
- *  2. Fetch product tags from Shopify to determine bundle groupings
+ *  2. Fetch bundle grouping via GraphQL lineItemGroup (no manual tags needed)
  *  3. Group items into boxes (1 box = 1 SooCool "good" = 1 shipping label)
  *  4. Send delivery-only order to SooCool with multiple goods
  *     → SooCool picks up from their own NL warehouse internally
@@ -26,10 +26,9 @@ async function runMealFlow(order) {
     const deliveryWindow = parseDeliveryWindow(order.note_attributes, order.shipping_lines);
     console.log(`${tag} Delivery window:`, deliveryWindow);
 
-    // Fetch product tags and group items into boxes
-    const productIds = order.line_items.map(i => i.product_id);
-    const tagsMap = await shopify.getProductTags(productIds);
-    const boxGroups = groupItemsIntoBoxes(order.line_items, tagsMap);
+    // Fetch bundle groups via GraphQL (replaces per-product tag fetching)
+    const bundleGroups = await shopify.getOrderBundleGroups(order.id);
+    const boxGroups = groupItemsIntoBoxesFromGraphQL(order.line_items, bundleGroups);
 
     const totalBoxes = boxGroups.reduce((sum, g) => sum + g.boxCount, 0);
     console.log(`${tag} Detected ${boxGroups.length} bundle group(s), ${totalBoxes} total box(es):`);
@@ -83,3 +82,4 @@ async function runMealFlow(order) {
 }
 
 module.exports = { runMealFlow };
+

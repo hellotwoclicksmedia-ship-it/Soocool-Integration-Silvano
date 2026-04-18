@@ -5,8 +5,11 @@ const shopify = require('../shopify/client');
 /**
  * Detects the flow type from Shopify order line items.
  * 
- * Shopify webhook payloads often have empty product_type fields,
- * so we fetch the actual product_type from the Shopify API if needed.
+ * Detection priority:
+ *  1. Check for _Bundle property in line_items (Shopify native bundles → meal)
+ *  2. Check product_type from webhook payload
+ *  3. Fetch product tags from Shopify API (bundle: prefix → meal)
+ *  4. Fetch product_type from Shopify API (pizza check)
  *
  * @param {Array} lineItems - order.line_items from Shopify webhook
  * @returns {Promise<'pizza' | 'meal' | 'unknown'>}
@@ -15,6 +18,16 @@ async function detectFlow(lineItems) {
     if (!Array.isArray(lineItems) || lineItems.length === 0) {
         console.warn('[flowDetector] No line items found');
         return 'unknown';
+    }
+
+    // ── Quick check: _Bundle property in REST webhook data ─────────────
+    // Shopify native bundles include { name: "_Bundle", value: "..." } in properties
+    const hasBundleProperty = lineItems.some(item =>
+        (item.properties || []).some(p => p.name === '_Bundle')
+    );
+    if (hasBundleProperty) {
+        console.log('[flowDetector] Detected _Bundle property in line items → meal flow');
+        return 'meal';
     }
 
     const pizzaType = config.productTypes.pizza.toLowerCase();
@@ -79,3 +92,4 @@ async function detectFlow(lineItems) {
 }
 
 module.exports = { detectFlow };
+

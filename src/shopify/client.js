@@ -92,4 +92,84 @@ async function getProductById(productId) {
     return res.data.product;
 }
 
-module.exports = { fulfillOrder, addOrderNote, getProductTags, getProductById };
+/**
+ * Fetch bundle grouping info for an order via GraphQL Admin API.
+ *
+ * Uses the `lineItemGroup` field on each line item to identify which items
+ * belong to which Shopify bundle — no manual product tags needed.
+ *
+ * @param {number|string} shopifyOrderId - numeric Shopify order ID
+ * @returns {Promise<Map<string, { title: string, quantity: number, lineItemIds: string[] }>>}
+ *   Map keyed by lineItemGroup GID, or empty Map if no bundles found.
+ *   Also attaches a `byLineItemId` Map<lineItemId, groupId> for easy lookup.
+ */
+async function getOrderBundleGroups(shopifyOrderId) {
+    const graphqlUrl = `https://${config.shopify.storeUrl}/admin/api/2024-04/graphql.json`;
+
+    const query = `
+        query getOrderBundles($id: ID!) {
+            order(id: $id) {
+                lineItems(first: 50) {
+                    nodes {
+                        id
+                        title
+                        quantity
+                        product { id }
+                        lineItemGroup {
+                            id
+                            title
+                            quantity
+                        }
+                    }
+                }
+            }
+        }
+    `;
+
+    const res = await axios.post(
+        graphqlUrl,
+        {
+            query,
+            variables: { id: `gid://shopify/Order/${shopifyOrderId}` },
+        },
+        {
+            headers: {
+                'X-Shopify-Access-Token': config.shopify.accessToken,
+                'Content-Type': 'application/json',
+            },
+            timeout: 15000,
+        }
+    );
+
+    if (res.data.errors) {
+        console.error('[shopify] GraphQL errors:', JSON.stringify(res.data.errors));
+        throw new Error(`GraphQL error: ${res.data.errors[0]?.message || 'unknown'}`);
+    }
+
+    const lineItems = res.data.data?.order?.lineItems?.nodes || [];
+    const groups = new Map();        // groupId → { title, quantity, lineItemIds }
+    const byLineItemId = new Map();  // lineItemId → groupId
+
+    for (const item of lineItems) {
+        if (!item.lineItemGroup) continue;
+
+        const groupId = item.lineItemGroup.id;
+        if (!groups.has(groupId)) {
+            groups.set(groupId, {
+                title: item.lineItemGroup.title,
+                quantity: item.lineItemGroup.quantity,
+                lineItemIds: [],
+            });
+        }
+        groups.get(groupId).lineItemIds.push(item.id);
+        byLineItemId.set(item.id, groupId);
+    }
+
+    // Attach the reverse lookup map as a property
+    groups.byLineItemId = byLineItemId;
+
+    console.log(`[shopify] GraphQL bundle lookup: ${groups.size} group(s), ${byLineItemId.size} grouped item(s) out of ${lineItems.length} total`);
+    return groups;
+}
+
+module.exports = { fulfillOrder, addOrderNote, getProductTags, getProductById, getOrderBundleGroups };

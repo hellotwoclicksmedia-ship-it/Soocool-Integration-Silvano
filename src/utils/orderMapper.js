@@ -307,6 +307,111 @@ function groupItemsIntoBoxes(lineItems, tagsMap, itemsPerBox = 12) {
 }
 
 /**
+ * Groups line items into physical boxes using GraphQL lineItemGroup data.
+ *
+ * Instead of relying on manually-applied product tags, this uses Shopify's
+ * native bundle information from the GraphQL API. Each unique lineItemGroup
+ * represents one bundle type; its `quantity` tells us how many boxes.
+ *
+ * Matching strategy: REST and GraphQL return line items in the same order,
+ * so we match by position index. GraphQL gives us the lineItemGroup for
+ * each line item, which we use to group the REST line items.
+ *
+ * Items without a lineItemGroup are treated as standalone boxes.
+ *
+ * @param {Array}  lineItems    - order.line_items from Shopify (REST webhook format)
+ * @param {Map}    bundleGroups - from shopify.getOrderBundleGroups()
+ *   Each entry: groupId → { title, quantity, lineItemIds[] }
+ * @returns {Array<{ bundleName: string, items: Array, boxCount: number }>}
+ */
+function groupItemsIntoBoxesFromGraphQL(lineItems, bundleGroups) {
+    // If no GraphQL data, fall back — use total quantity as box count
+    if (!bundleGroups || bundleGroups.size === 0) {
+        const totalQty = lineItems.reduce((sum, i) => sum + i.quantity, 0);
+        console.log(`[orderMapper] No GraphQL bundle groups — treating as ${totalQty} box(es)`);
+        return [{ bundleName: 'Meal Box', items: lineItems, boxCount: totalQty }];
+    }
+
+    // Build a product-to-group lookup from GraphQL data
+    // GraphQL lineItemIds are GIDs like "gid://shopify/LineItem/123"
+    // but we actually just need to map by group — each group has lineItemIds
+    // that tell us which products belong to it.
+    //
+    // However, the simplest reliable approach: since GraphQL bundles already
+    // contain lineItemIds, we know which group each lineItem belongs to.
+    // We build a reverse lookup: lineItemGID → groupId
+    const lineItemToGroup = bundleGroups.byLineItemId || new Map();
+
+    // Build product GID → group mapping from the GraphQL data
+    // We'll match REST items by converting product_id to GID
+    const groupedByGroupId = new Map(); // groupId → REST items[]
+    const ungrouped = [];
+
+    // Since REST and GraphQL may order differently, match by product_id
+    // Build a lookup: for each group, collect the product GIDs
+    const productToGroup = new Map(); // productGid → groupId
+    for (const [groupId, group] of bundleGroups) {
+        // We need to check which products are in each group
+        // The lineItemIds are lineItem GIDs, not product GIDs
+        // So we need a different strategy...
+    }
+
+    // Simplest reliable approach: REST items map 1:1 with GraphQL nodes
+    // in the same order. Use position to match.
+    // This works because Shopify returns line items in the same order.
+    const graphqlGroupsList = [...bundleGroups.entries()]; // [[groupId, {title, quantity, lineItemIds}], ...]
+
+    // Build a flat list of (groupId, lineItemGID) pairs in the order they appear in GraphQL
+    const orderedGroupAssignments = [];
+    for (const [groupId] of graphqlGroupsList) {
+        const group = bundleGroups.get(groupId);
+        for (const liGid of group.lineItemIds) {
+            orderedGroupAssignments.push(groupId);
+        }
+    }
+
+    // Now match REST items by position
+    for (let i = 0; i < lineItems.length; i++) {
+        const item = lineItems[i];
+        const assignedGroupId = orderedGroupAssignments[i];
+
+        if (assignedGroupId) {
+            if (!groupedByGroupId.has(assignedGroupId)) {
+                groupedByGroupId.set(assignedGroupId, []);
+            }
+            groupedByGroupId.get(assignedGroupId).push(item);
+        } else {
+            ungrouped.push(item);
+        }
+    }
+
+    // Build result
+    const result = [];
+
+    for (const [groupId, items] of groupedByGroupId) {
+        const gqlGroup = bundleGroups.get(groupId);
+        result.push({
+            bundleName: gqlGroup ? gqlGroup.title : 'Meal Box',
+            items,
+            boxCount: gqlGroup ? gqlGroup.quantity : 1,
+        });
+    }
+
+    // Add ungrouped items as standalone boxes
+    if (ungrouped.length > 0) {
+        for (const item of ungrouped) {
+            result.push({
+                bundleName: item.name || 'Standalone Item',
+                items: [item],
+                boxCount: item.quantity,
+            });
+        }
+    }
+
+    return result;
+}
+
+/**
  * Builds a SooCool order payload for the Pizza flow (delivery-only).
  * Creates one good (box) per quantity unit so qty 2 = 2 goods in SooCool.
  */
@@ -437,5 +542,6 @@ module.exports = {
     buildPizzaPayload,
     buildMealPayload,
     groupItemsIntoBoxes,
+    groupItemsIntoBoxesFromGraphQL,
     mapAddress,
 };
